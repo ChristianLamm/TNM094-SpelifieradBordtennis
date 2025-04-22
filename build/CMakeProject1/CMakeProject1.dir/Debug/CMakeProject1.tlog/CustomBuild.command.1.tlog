@@ -1,0 +1,10 @@
+^C:\USERS\LINUS\ONEDRIVE\SKRIVBORD\TESTSOCKET\CMAKEPROJECT1\CMAKEPROJECT1\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/linus/OneDrive/Skrivbord/testsocket/CMakeProject1 -BC:/Users/linus/OneDrive/Skrivbord/build --check-stamp-file C:/Users/linus/OneDrive/Skrivbord/build/CMakeProject1/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
