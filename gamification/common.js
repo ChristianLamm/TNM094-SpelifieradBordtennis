@@ -1,3 +1,5 @@
+
+
 // common.js
 //ratio width and height : 
 
@@ -5,6 +7,7 @@ export const tableWidth = Math.round(window.innerHeight * 1.1);
 export const tableHeight = window.innerHeight;
 export const bgBlue = 0x00008b;
 export const white = 0xffffff;
+export const black = 0x000000;
 
 export async function initializeApp() {
   const app = new PIXI.Application();
@@ -38,14 +41,20 @@ export async function initializeApp() {
 
   const scoreText = new PIXI.Text({
     text: "0",
-    style: {},
+    style: {
+      fontFamily: "Arial",
+      fontSize: 36,
+      fontWeight: "bold",
+      align: "center",
+      
+    }
   });
 
   scoreText.style.fill = white;
   app.stage.addChild(scoreText);
 
   scoreText.x = tableWidth - 50;
-  scoreText.y = tableHeight - 50;
+  scoreText.y = 50;
 
   function updateScoreText(message) {
     scoreText.text = message;
