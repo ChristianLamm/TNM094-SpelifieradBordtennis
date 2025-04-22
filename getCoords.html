@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Receive Coords</title>
+  </head>
+  <body>
+    <h1>Koordinater</h1>
+    <p id="coordsDisplay">Väntar på data...</p>
+
+    <script>
+      //WebSocket-anslutning, öppnas till server på local port 8080
+      const ws = new WebSocket('ws://localhost:8080');
+
+      //körs när meddelande tas emot från ws server
+      ws.onmessage = function (event) {
+        document.getElementById('coordsDisplay').innerText = event.data;
+      };
+
+      //kör när meddelande inte tas emot
+      ws.onerror = function (err) {
+        console.error("WebSocket error:", err);
+      };
+    </script>
+  </body>
+</html>

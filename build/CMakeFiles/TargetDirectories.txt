@@ -1,0 +1,3 @@
+C:/Users/linus/OneDrive/Skrivbord/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/linus/OneDrive/Skrivbord/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/linus/OneDrive/Skrivbord/build/CMakeProject1/CMakeFiles/CMakeProject1.dir

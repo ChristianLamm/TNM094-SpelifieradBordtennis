@@ -1,0 +1,145 @@
+<!-- 
+How does it work?
+Each cm of a ping pong table has 6 pixels, this may change over time.
+This makes the "virtual table" 604 x 548 pixels
+
+You have a target that shows where to hit; if you hit it 5 times, the target moves.
+If the middle of where you hit is inside the target, it counts as a hit
+
+A ping pong ball has a 4 cm diameter, meaning it is 24 pixels in the digital world.
+The target is 48x48 pixels in size.
+
+The marker that appears when you miss is 24x24, the same size as the ball.
+
+
+
+|-----|   -0
+|     |   |
+|-----|   -548
+
+|-----|
+0    604
+
+
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://pixijs.download/release/pixi.min.js"></script>
+  </head>
+  <body>
+    <h1>Spelifierad <br />bordtennisträning</h1>
+    <h1>hej</h1>
+    <nav><a href="getCoords.html"></a></nav>
+
+    <script type="module">
+      // importing the stage
+      import {
+        tableWidth,
+        tableHeight,
+        bgBlue,
+        white,
+        initializeApp,
+      } from "./common.js";
+
+      (async () => {
+
+        const { app, scoreText, updateScoreText } = await initializeApp();
+
+          //-------------------------GAMECODE GOES HERE--------------------------
+        // Create the target and add it to the stage
+        await PIXI.Assets.load("images/bigRedSquare.png");
+        let target = PIXI.Sprite.from("images/bigRedSquare.png");
+        app.stage.addChild(target);
+
+        // Create the marker
+        await PIXI.Assets.load("images/yellowMarker.png");
+        let marker = PIXI.Sprite.from("images/yellowMarker.png");
+
+        //-------------------------------------------------------------------------------------------------
+        // GAMIFICATION
+        //-------------------------------------------------------------------------------------------------
+
+        let targetCounter = 0;
+        target.interactive = true;
+        target.buttonMode = true;
+
+        // When the player clicks the target
+        target.on("pointerdown", () => {
+          targetCounter += 1;
+          updateScoreText(targetCounter);
+          if (targetCounter == 5) {
+            // Move the target to a new random position
+            let newTargetPosX = Math.random() * app.view.width;
+            let newTargetPosY = Math.random() * app.view.height;
+
+            // Set a new position for the target
+            if (newTargetPosX + target.width > app.view.width) {
+              newTargetPosX = app.view.width - target.width;
+            }
+            if (newTargetPosY + target.height > app.view.height) {
+              newTargetPosY = app.view.height - target.height;
+            }
+            if (newTargetPosX < 0) {
+              newTargetPosX = 0;
+            }
+            if (newTargetPosY < 0) {
+              newTargetPosY = 0;
+            }
+
+            target.x = newTargetPosX;
+            target.y = newTargetPosY;
+
+            targetCounter = 0;
+            updateScoreText(targetCounter);
+          }
+        });
+
+        // Make the window clickable
+        window.addEventListener("click", onClick);
+
+        function onClick(event) {
+          // Get the mouse coordinates relative to the Pixi.js canvas
+          let rect = app.view.getBoundingClientRect();
+          let x = event.clientX - rect.left;
+          let y = event.clientY - rect.top;
+
+          // Calculate the middle coordinate of the target
+          let targetMiddleX = target.x + target.width / 2;
+          let targetMiddleY = target.y + target.height / 2;
+
+          // Calculate the range of coordinates that count as a hit
+          let underHitPointX = x - target.width / 2;
+          let overHitPointX = x + target.width / 2;
+          let underHitPointY = y - target.height / 2;
+          let overHitPointY = y + target.height / 2;
+
+          if (
+            // Hit detection
+            (underHitPointX < targetMiddleX) &
+            (overHitPointX > targetMiddleX) &
+            (underHitPointY < targetMiddleY) &
+            (overHitPointY > targetMiddleY)
+          ) {
+            console.log("You hit the target!");
+          } else {
+            // Missed shot
+            marker.x = x - marker.width / 2;
+            marker.y = y - marker.height / 2;
+
+            app.stage.addChild(marker);
+
+            setTimeout(() => {
+              app.stage.removeChild(marker);
+            }, 1000);
+
+            console.log(`Mouse clicked at x: ${x}, y: ${y}`);
+          }
+        }
+      })();
+    </script>
+  </body>
+
+  <link rel="stylesheet" href="style.css" />
+</html>
