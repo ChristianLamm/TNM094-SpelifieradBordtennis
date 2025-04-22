@@ -1,6 +1,7 @@
 // common.js
 //ratio width and height : 
-export const tableWidth = window.innerHeight * 1.1;
+
+export const tableWidth = Math.round(window.innerHeight * 1.1);
 export const tableHeight = window.innerHeight;
 export const bgBlue = 0x00008b;
 export const white = 0xffffff;
@@ -15,6 +16,7 @@ export async function initializeApp() {
     //resizeTo: window,
     backgroundColor: bgBlue,
   });
+  console.log("table height: " + tableHeight + "\n" + "table width: " + tableWidth)
 
   document.body.style.margin = "0";
   //document.body.style.overflow = "hidden";
