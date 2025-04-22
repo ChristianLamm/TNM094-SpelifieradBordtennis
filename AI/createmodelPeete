@@ -1,0 +1,42 @@
+# train_model.py
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+import joblib
+
+# === Load Positive Samples ===
+df_pos = pd.read_csv(r"C:\Users\pette\OneDrive\Skrivbord\Kandidat\AI\liu-tnm119-projekt\MFCC\all_pingpong_mfccs.csv")
+label_col = df_pos.columns[0]  # Should be like "pong_1"
+df_pos_grouped = df_pos.groupby(label_col).mean(numeric_only=True)
+X_pos = df_pos_grouped.values
+y_pos = np.ones(len(X_pos))
+
+# === Load Negative Samples ===
+df_neg = pd.read_csv(r"C:\Users\pette\OneDrive\Skrivbord\Kandidat\AI\liu-tnm119-projekt\MFCC\not_pingpong_mfccs.csv")
+chunk_size = 10
+X_neg = []
+for i in range(0, len(df_neg) - chunk_size, chunk_size):
+    chunk = df_neg.iloc[i:i+chunk_size]
+    chunk_numeric = chunk.select_dtypes(include=[np.number])
+    if not chunk_numeric.empty:
+        X_neg.append(chunk_numeric.mean().values)
+
+X_neg = np.array(X_neg)
+y_neg = np.zeros(len(X_neg))
+
+# === Combine and Train ===
+X = np.vstack((X_pos, X_neg))
+y = np.concatenate((y_pos, y_neg))
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+print("\n📊 Classification Report:")
+print(classification_report(y_test, model.predict(X_test)))
+
+joblib.dump(model, "random_forest_model.pkl")
+print("✅ Model saved to random_forest_model.pkl")
