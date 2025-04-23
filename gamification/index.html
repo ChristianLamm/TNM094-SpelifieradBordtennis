@@ -1,156 +1,19 @@
-<!-- 
-How does it work?
-
-
--->
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <script src="https://pixijs.download/release/pixi.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- <h1>Spelifierad <br />bordtennisträning</h1>
-    <h1>hej</h1>
-    <nav><a href="getCoords.html"></a></nav> -->
-
-    <script type="module">
-      // importing the stage
-      import {
-        tableWidth,
-        tableHeight,
-        bgBlue,
-        white,
-        initializeApp,
-      } from "./common.js";
-
-      (async () => {
-        const { app, scoreText, updateScoreText } = await initializeApp();
-
-        //-------------------------GAMECODE GOES HERE--------------------------
-        //load images and set them as variables
-        await PIXI.Assets.load("images/virus.png");
-        await PIXI.Assets.load("images/virus_dmg.png");
-        await PIXI.Assets.load("images/virus_dead.png");
-
-        const virusTex = PIXI.Texture.from("images/virus.png");
-        const virus_dmgTex = PIXI.Texture.from("images/virus_dmg.png");
-        const virus_deadText = PIXI.Texture.from("images/virus_dead.png");
-
-        // Create the target and add it to the stage
-        let target = new PIXI.Sprite(virusTex);
-        target.scale.set(0.5, 0.5); // Scale the target to half its size
-        app.stage.addChild(target);
-
-        // Create the marker
-        await PIXI.Assets.load("images/yellowMarker.png");
-        let marker = PIXI.Sprite.from("images/yellowMarker.png");
-
-        //-------------------------------------------------------------------------------------------------
-        // GAMIFICATION
-        //-------------------------------------------------------------------------------------------------
-
-        let targetCounter = 0;
-        target.interactive = true;
-        target.buttonMode = true;
-
-        //functiont that changes the texture of a sprite
-        function changeTexture(targetSprite, newTexture) {
-          targetSprite.texture = newTexture;
-        }
-
-        // function that lets a sprite change texture temporarily
-
-        function changeTextureTemporarily(targetSprite, tempTexture) {
-          let originalTexture = targetSprite.texture;
-          changeTexture(targetSprite, tempTexture);
-
-          setTimeout(() => {
-            changeTexture(targetSprite, originalTexture);
-          }, 500); // 1000 milliseconds = 1 second
-        }
-        // When the player clicks the target
-        target.on("pointerdown", () => {
-          target.interactive = false; // Make the target unclickable
-          setTimeout(() => {
-            target.interactive = true; // Re-enable clicking after 0.5 seconds
-          }, 500);
-
-          targetCounter += 1;
-          updateScoreText(targetCounter);
-
-          if (targetCounter % 5 == 0) {
-
-            // Move the target to a new random position
-            let newTargetPosX = Math.random() * app.view.width;
-            let newTargetPosY = Math.random() * app.view.height;
-
-            // Set a new position for the target
-            if (newTargetPosX + target.width > app.view.width) {
-              newTargetPosX = app.view.width - target.width;
-            }
-            if (newTargetPosY + target.height > app.view.height) {
-              newTargetPosY = app.view.height - target.height;
-            }
-            if (newTargetPosX < 0) {
-              newTargetPosX = 0;
-            }
-            if (newTargetPosY < 0) {
-              newTargetPosY = 0;
-            }
-            changeTextureTemporarily(target, virus_deadText);
-            setTimeout(() => {
-              target.x = newTargetPosX;
-              target.y = newTargetPosY;
-            }, 500);
-          } else {
-            changeTextureTemporarily(target, virus_dmgTex);
-          }
-        });
-
-        // Make the window clickable
-        window.addEventListener("click", onClick);
-
-        function onClick(event) {
-          // Get the mouse coordinates relative to the Pixi.js canvas
-          let rect = app.view.getBoundingClientRect();
-          let x = event.clientX - rect.left;
-          let y = event.clientY - rect.top;
-
-          // Calculate the middle coordinate of the target
-          let targetMiddleX = target.x + target.width / 2;
-          let targetMiddleY = target.y + target.height / 2;
-
-          // Calculate the range of coordinates that count as a hit
-          let underHitPointX = x - target.width / 2;
-          let overHitPointX = x + target.width / 2;
-          let underHitPointY = y - target.height / 2;
-          let overHitPointY = y + target.height / 2;
-
-          if (
-            // Hit detection
-            (underHitPointX < targetMiddleX) &
-            (overHitPointX > targetMiddleX) &
-            (underHitPointY < targetMiddleY) &
-            (overHitPointY > targetMiddleY)
-          ) {
-            console.log("You hit the target!");
-          } else {
-            // Missed shot
-            marker.x = x - marker.width / 2;
-            marker.y = y - marker.height / 2;
-
-            app.stage.addChild(marker);
-
-            setTimeout(() => {
-              app.stage.removeChild(marker);
-            }, 1000);
-
-            console.log(`Mouse clicked at x: ${x}, y: ${y}`);
-          }
-        }
-      })();
-    </script>
+    <h1>Title</h1>
+    <nav>
+      <a href="gameguide.html"><h3>Spelguide</h3></a>
+      <a href="credits.html"><h3>Credits</h3></a>
+    </nav>
+    <nav>
+      <a href="gamemode1.html"><h3>Spelläge 1</h3></a>
+    </nav>
   </body>
 </html>

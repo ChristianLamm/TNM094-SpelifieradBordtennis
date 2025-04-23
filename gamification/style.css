@@ -2,8 +2,34 @@ body{
     background-color: lightgray;
     height: 100vh;
     width: auto;
+    overflow: hidden;
+}
+
+:root {
+    --tableHeight: 100vh;
+    --tableWidth: calc(1.1 * var(--tableHeight));
+    
 }
 
 h1{
     font-family: sans-serif;
+}
+
+nav{
+    margin: 0 auto;
+    width: var(--tableWidth);
+    display: flex;
+    justify-content: space-between;
+    /* background-color: brown; */
+    padding-top: 1em;
+}
+
+a{
+    text-decoration: none;
+    color: white;
+    width: 150px;
+    background-color: red;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
 }
