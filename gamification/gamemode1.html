@@ -11,12 +11,29 @@ How does it work?
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-
     <!-- <h1>Spelifierad <br />bordtennisträning</h1>
     <h1>hej</h1>
     <nav><a href="getCoords.html"></a></nav> -->
 
     <script type="module">
+
+      //setting up the websocket
+      //WebSocket-anslutning, öppnas till server på local port 8080
+      const ws = new WebSocket("ws://localhost:8080");
+
+      let eventDataValue = 0;
+
+      //körs när meddelande tas emot från ws server
+      ws.onmessage = function (event) {
+        let eventDataValue = parseInt(event.data, 10); // Convert event.data to an integer
+        console.log(eventDataValue)
+      };
+
+      //kör när meddelande inte tas emot
+      ws.onerror = function (err) {
+        console.error("WebSocket error:", err);
+      };
+
       // importing the stage
       import {
         tableWidth,
@@ -82,7 +99,6 @@ How does it work?
           updateScoreText(targetCounter);
 
           if (targetCounter % 5 == 0) {
-
             // Move the target to a new random position
             let newTargetPosX = Math.random() * app.view.width;
             let newTargetPosY = Math.random() * app.view.height;
