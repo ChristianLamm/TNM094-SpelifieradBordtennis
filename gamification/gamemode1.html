@@ -16,23 +16,11 @@ How does it work?
     <nav><a href="getCoords.html"></a></nav> -->
 
     <script type="module">
-
       //setting up the websocket
       //WebSocket-anslutning, öppnas till server på local port 8080
       const ws = new WebSocket("ws://localhost:8080");
 
       let eventDataValue = 0;
-
-      //körs när meddelande tas emot från ws server
-      ws.onmessage = function (event) {
-        let eventDataValue = parseInt(event.data, 10); // Convert event.data to an integer
-        console.log(eventDataValue)
-      };
-
-      //kör när meddelande inte tas emot
-      ws.onerror = function (err) {
-        console.error("WebSocket error:", err);
-      };
 
       // importing the stage
       import {
@@ -65,6 +53,12 @@ How does it work?
         await PIXI.Assets.load("images/yellowMarker.png");
         let marker = PIXI.Sprite.from("images/yellowMarker.png");
 
+        // Create a smaller marker
+        await PIXI.Assets.load("images/yellowMarker.png");
+        let smallMarker = PIXI.Sprite.from("images/yellowMarker.png");
+        smallMarker.scale.set(0.5, 0.5); // Scale the marker to half its size
+
+       
         //-------------------------------------------------------------------------------------------------
         // GAMIFICATION
         //-------------------------------------------------------------------------------------------------
@@ -88,6 +82,50 @@ How does it work?
             changeTexture(targetSprite, originalTexture);
           }, 500); // 1000 milliseconds = 1 second
         }
+
+        //hit detection function
+        function hitCheck(mySprite, myXCoord, myYCoord){
+
+          //sprite x and y coordinate, top left of the sprite
+          let spriteXCoord = mySprite.x;
+          let spriteYCoord = mySprite.y;
+
+          //height and width of the sprite
+          let spriteHeight = mySprite.height;
+          let spriteWidth = mySprite.width;
+
+            if (
+            myXCoord >= spriteXCoord &&
+            myXCoord <= spriteXCoord + spriteWidth &&
+            myYCoord >= spriteYCoord &&
+            myYCoord <= spriteYCoord + spriteHeight
+            ) {
+            console.log("hit");
+            }
+
+        }
+
+         //körs när meddelande tas emot från ws server
+         ws.onmessage = function (event) {
+          let eventDataValue = event.data; // Convert event.data to an integer
+
+          let [xCoord, yCoord] = eventDataValue.split(",").map(Number);
+          smallMarker.x = xCoord - smallMarker.width / 2;
+          smallMarker.y = yCoord - smallMarker.height / 2;
+          app.stage.addChild(smallMarker);
+          hitCheck(target, xCoord, yCoord);
+
+          setTimeout(() => {
+            app.stage.removeChild(smallMarker);
+          }, 1000);
+          console.log(eventDataValue);
+        };
+
+        //kör när meddelande inte tas emot
+        ws.onerror = function (err) {
+          console.error("WebSocket error:", err);
+        };
+
         // When the player clicks the target
         target.on("pointerdown", () => {
           target.interactive = false; // Make the target unclickable
