@@ -1,0 +1,62 @@
+<config>
+
+  <ImportLibrary library="gmGraphics"/>
+
+  <SdlWindow
+      size="1536 1024"
+      title="Spherical"
+      GLMajor="3" GLMinor="3">
+
+    <SdlContext
+        DEF="SDLContext"
+        useVideo="1"/>
+
+    <CubeSceneRenderer
+        cubeSize="0.2"
+        cubeSetSize="10.0"/>
+
+    <VelocityViewpoint
+        position="0 0 7"
+        velocity="0 0 -0.5"
+        rotation="axisangle 1 0 0 0"/>
+
+    <TiledView>
+
+      <param name="tileLocation" value="0 1 1 2"/>
+      <SpatialSphericalView
+          linearInterpolation="1">
+
+        <EquirectangularCoordinatesMapper/>
+
+      </SpatialSphericalView>
+
+      <param name="tileLocation" value="0 0 1 1"/>
+      <SpatialSphericalView
+          linearInterpolation="1">
+
+        <AngularFisheyeCoordinatesMapper
+            coverageAngle="6.283"/>
+
+      </SpatialSphericalView>
+
+      <param name="tileLocation" value="1 1 1 2"/>
+      <PosedSphericalView
+          linearInterpolation="1">
+
+        <EquirectangularCoordinatesMapper/>
+
+      </PosedSphericalView>
+
+      <param name="tileLocation" value="1 0 1 1"/>
+      <PosedSphericalView
+          linearInterpolation="1">
+
+        <AngularFisheyeCoordinatesMapper
+          coverageAngle="6.283"/>
+
+      </PosedSphericalView>
+    </TiledView>
+
+  </SdlWindow>
+
+</config>

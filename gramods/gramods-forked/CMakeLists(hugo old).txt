@@ -1,0 +1,53 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(tnm094-project)
+
+
+
+# find_package(asio CONFIG REQUIRED)
+# find_package(eigen3 CONFIG REQUIRED)
+# find_package(freeimage CONFIG REQUIRED)
+# find_package(glew CONFIG REQUIRED)
+# find_package(sdl2 CONFIG REQUIRED)
+# find_package(fmt CONFIG REQUIRED)
+# find_package(tclap CONFIG REQUIRED)
+# find_package(tinyobjloader CONFIG REQUIRED)
+# find_package(tinyxml2 CONFIG REQUIRED)
+
+
+add_executable(tnm094-project main.cpp)
+
+find_package(asio CONFIG REQUIRED)
+target_link_libraries(tnm094-project PRIVATE asio::asio)
+
+find_package(Eigen3 CONFIG REQUIRED)
+target_link_libraries(tnm094-project PRIVATE Eigen3::Eigen)
+
+find_package(freeimage CONFIG REQUIRED)
+target_link_libraries(tnm094-project PRIVATE freeimage::FreeImage freeimage::FreeImagePlus)
+
+find_package(GLEW REQUIRED)
+target_link_libraries(tnm094-project PRIVATE GLEW::GLEW)
+
+find_package(glm CONFIG REQUIRED)
+target_link_libraries(tnm094-project PRIVATE glm::glm)
+
+find_package(SDL2 CONFIG REQUIRED)
+target_link_libraries(tnm094-project
+    PRIVATE
+    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+)
+
+find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
+target_include_directories(tnm094-project PRIVATE ${TCLAP_INCLUDE_DIRS})
+
+find_package(tinyobjloader CONFIG REQUIRED)
+target_link_libraries(tnm094-project PRIVATE tinyobjloader::tinyobjloader)
+
+find_package(tinyxml2 CONFIG REQUIRED)
+target_link_libraries(tnm094-project PRIVATE tinyxml2::tinyxml2)
+
+
+
+target_include_directories(tnm094-project PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

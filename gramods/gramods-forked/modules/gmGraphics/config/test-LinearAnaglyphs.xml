@@ -1,0 +1,39 @@
+<config>
+
+  <ImportLibrary library="gmGraphics"/>
+
+  <SdlWindow
+      size="1000 1000"
+      title="Spatial"
+      fullscreen="1"
+      GLMajor="3" GLMinor="3">
+
+    <SdlContext
+        DEF="SDLContext"
+        useVideo="1"/>
+
+    <CubeSceneRenderer
+        cubeSize="0.01"
+        cubeSetSize="0.2"/>
+
+    <!-- -0.3 +0.165 +0.0 -->
+    <SpatialPlanarView
+        topLeftCorner    ="-0.3 +0.165 +0.0"
+        bottomRightCorner="+0.3 -0.165 +0.0"
+        upDirection="0.0 1.0 0.0">
+
+      <LinearAnaglyphsMultiplexer
+          leftColor="1 1 0"
+          rightColor="0 0 1"
+          leftSaturation="1.0"
+          rightSaturation="0.0"/>
+
+      <Viewpoint
+          position="0 0 0.7"
+          eyeSeparation="0.065"/>
+
+    </SpatialPlanarView>
+
+  </SdlWindow>
+
+</config>

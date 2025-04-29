@@ -1,0 +1,30 @@
+<config>
+
+  <ImportLibrary library="gmGraphics"/>
+
+  <SdlWindow
+      size="1536 1024"
+      title="Little Planet Uniformity"
+      GLMajor="3" GLMinor="3">
+
+    <SdlContext
+        DEF="SDLContext"
+        useVideo="1"/>
+
+    <SphereSceneRenderer
+        sphereRadius="0.5"
+        sphereSetRadius="10.0"/>
+
+    <PosedSphericalView
+        linearInterpolation="1">
+
+      <Viewpoint/>
+
+      <AngularFisheyeCoordinatesMapper
+          coverageAngle="6.283"/>
+
+    </PosedSphericalView>
+
+  </SdlWindow>
+
+</config>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group>
+  <![CDATA[
+
+    H3D configuration template for two step calibration of the head
+    tracking relative the screen in the haptic displays at LiU. The
+    points in the first calibration represent left lateral wall of
+    orbit, right lateral wall of orbit and chin of the wearer,
+    respectively. Adjust the numbers to match the calibration target.
+
+    Subsequent calibration of room coordinates is done by marking the
+    monitor corners, in clockwise order, starting at the lower left
+    corner. Observe that the points are specified for the physical
+    monitor, not the reflection. Adjust the numbers if necessary.
+
+
+    1. Calibration of helmet mount:
+
+    ./bin/gm-tracker-registration \
+      --output-template urn:gramods:config/se.liu/haptics.head-tracked-mono-view-template.x3d \
+      --output-file se.liu.haptics.head-tracked-mono-view-template-step2.x3d \
+      --output-template urn:gramods:config/se.liu/haptics.head-tracked-stereo-view-template.x3d \
+      --output-file se.liu.haptics.head-tracked-stereo-view-template-step2.x3d \
+      --config urn:gramods:config/output-normal-to-console.xml \
+      --config urn:gramods:config/se.liu/workbench.calibration-tracker-vrpn-relative.xml \
+      --a-point -0.05,0,0 \
+      --a-point +0.05,0,0 \
+      --a-point 0,-0.12,0
+
+
+    2. Calibration of tracker relative monitor:
+
+    ./bin/gm-tracker-registration \
+      --output-template se.liu.haptics.head-tracked-mono-view-template-step2.x3d \
+      --output-file se.liu.haptics.head-tracked-mono-view.x3d \
+      --output-template se.liu.haptics.head-tracked-stereo-view-template-step2.x3d \
+      --output-file se.liu.haptics.head-tracked-stereo-view.x3d \
+      --config urn:gramods:config/output-normal-to-console.xml \
+      --config urn:gramods:config/se.liu/workbench.calibration-tracker-vrpn.xml \
+      --a-point -0.267,0.276,0.125 \
+      --a-point -0.267,0.276,0.427 \
+      --a-point +0.267,0.276,0.427 \
+      --a-point +0.267,0.276,0.125
+  ]]>
+
+  <PythonScript url="urn:candy:python/AutoLoadSO.py"/>
+  <PythonScript url="urn:candy:python/CorrectViewpoint.py"/>
+  <StereoInfo
+      interocularDistance="0.06"/>
+  <SMViewpoint
+      DEF="VIEWPOINT"
+      useHeadOrientation="true"
+      position="0 0 1.0"
+      screenLowerLeft="-0.267 -0.151 0"
+      screenUpperRight="0.267  0.151 0">
+    <SinglePointTrackerFilter
+        index="0">
+      <MappedTrackerFilter>
+        <VRPNTracker
+            DEF="TRACKER"
+            sensorId="0"
+            connectionString="openvr/device/LHR-03D3A5F2@tcp://win04681.ad.liu.se"/>
+        <AffineMapping
+            orientationPreCalibration="%Rix %Riy %Riz %Ria"
+            orientationPostCalibration="%%Rx %%Ry %%Rz %%Ra"
+            offset="%Mi3x %Mi3y %Mi3z"
+            positionCalibration="%%M0x %%M1x %%M2x %%M3x
+                                 %%M0y %%M1y %%M2y %%M3y
+                                 %%M0z %%M1z %%M2z %%M3z
+                                 0 0 0 1"/>
+      </MappedTrackerFilter>
+    </SinglePointTrackerFilter>
+  </SMViewpoint>
+</Group>

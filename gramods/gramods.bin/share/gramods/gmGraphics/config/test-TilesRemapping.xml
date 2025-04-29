@@ -1,0 +1,80 @@
+<config>
+
+  <ImportLibrary library="gmGraphics"/>
+
+  <SdlWindow
+      size="1536 1024"
+      title="Spherical"
+      GLMajor="3" GLMinor="3">
+
+    <SdlContext
+        DEF="SDLContext"
+        useVideo="1"/>
+
+    <CubeSceneRenderer
+        cubeSize="0.2"
+        cubeSetSize="10.0"/>
+
+    <VelocityViewpoint
+        position="0 0 7"
+        velocity="0 0 -0.5"
+        rotation="axisangle 1 0 0 0"/>
+
+    <TiledView>
+
+      <param name="tileLocation" value="0 2 1 1"/>
+      <RemapperView>
+        <EquirectangularCoordinatesMapper KEY="from"/>
+        <AngularFisheyeCoordinatesMapper KEY="to"/>
+      <SpatialSphericalView
+          linearInterpolation="1">
+
+        <EquirectangularCoordinatesMapper/>
+
+      </SpatialSphericalView>
+      </RemapperView>
+
+      <param name="tileLocation" value="0 0 1 2"/>
+      <RemapperView>
+        <AngularFisheyeCoordinatesMapper
+            coverageAngle="6.283" KEY="from"/>
+        <EquirectangularCoordinatesMapper KEY="to"/>
+      <SpatialSphericalView
+          linearInterpolation="1">
+
+        <AngularFisheyeCoordinatesMapper
+            coverageAngle="6.283"/>
+
+      </SpatialSphericalView>
+      </RemapperView>
+
+      <param name="tileLocation" value="1 2 1 1"/>
+      <RemapperView>
+        <EquirectangularCoordinatesMapper KEY="from"/>
+        <AngularFisheyeCoordinatesMapper KEY="to"/>
+      <PosedSphericalView
+          linearInterpolation="1">
+
+        <EquirectangularCoordinatesMapper/>
+
+      </PosedSphericalView>
+      </RemapperView>
+
+      <param name="tileLocation" value="1 0 1 2"/>
+      <RemapperView>
+        <AngularFisheyeCoordinatesMapper
+            coverageAngle="6.283" KEY="from"/>
+        <EquirectangularCoordinatesMapper KEY="to"/>
+      <PosedSphericalView
+          linearInterpolation="1">
+
+        <AngularFisheyeCoordinatesMapper
+          coverageAngle="6.283"/>
+
+      </PosedSphericalView>
+      </RemapperView>
+    </TiledView>
+
+  </SdlWindow>
+
+</config>

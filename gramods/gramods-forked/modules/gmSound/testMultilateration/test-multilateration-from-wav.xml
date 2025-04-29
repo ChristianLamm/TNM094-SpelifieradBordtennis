@@ -1,0 +1,17 @@
+<config>
+<!--ImportLibrary library="gmSound"/-->
+  <Multilateration>
+    <!-- Get values with gm-microphone-registration -->
+    <param name="point" value="0 0 0"/>
+    <param name="point" value="1 0 0"/>
+    <param name="point" value="0 1 0"/>
+    <param name="point" value="0 0 1"/>
+
+    <SoundBurstDetector>
+      <!--CaptureFromWav file="four_channel_tetraed_calibration.wav"/-->
+<!-- Get name from gm-demo-audio-capture.exe --list-devices -->
+      <OpenALCapture deviceName="OpenAL Soft on Microphone Array (Realtek(R) Audio)" channelCount="4"/>
+    </SoundBurstDetector>
+  </Multilateration>
+
+</config>

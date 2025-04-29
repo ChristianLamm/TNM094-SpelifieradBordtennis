@@ -1,0 +1,83 @@
+{
+   "bindings" : {
+      "/actions/std" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/std/in/MainButton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/std/in/MainButton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/std/in/SecondButton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/std/in/SecondButton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/grip"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/std/in/MenuButton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/menu"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/std/in/MenuButton"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/menu"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/std/in/AnalogInput"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/right/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "position" : {
+                     "output" : "/actions/std/in/AnalogInput"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/left/input/trackpad"
+            }
+         ]
+      }
+   },
+   "controller_type" : "generic",
+   "description" : "Standard bindings for Gramods for a generic controller",
+   "name" : "Gramods bindings for a generic controller"
+}
