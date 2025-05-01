@@ -1,0 +1,61 @@
+<config>
+
+  <ImportLibrary library="gmGraphics"/>
+
+  <SdlWindow
+      size="1536 1024"
+      title="Spherical"
+      GLMajor="3" GLMinor="3">
+
+    <SdlContext
+        DEF="SDLContext"
+        useVideo="1"/>
+
+    <SphereRenderer
+        radius="1">
+      <AngularFisheyeCoordinatesMapper
+          coverageAngle="3.1416"/>
+      <ImageTexture
+          file="urn:gramods:gmGraphics/resources/fulldome180-coordinates.png"/>
+    </SphereRenderer>
+
+    <TiledView>
+
+      <param name="tileLocation" value="0 0 1 1"/>
+      <SpatialPlanarView
+          topLeftCorner="-2.0 2.0 0.0"
+          bottomRightCorner="2.0 -2.0 0.0"
+          upDirection="0.0 1.0 0.0">
+        <Viewpoint
+            position="0.0 0.0 100.0"/>
+      </SpatialPlanarView>
+
+      <param name="tileLocation" value="0 1 1 1"/>
+      <SpatialPlanarView
+          topLeftCorner="0.0 2.0 -2.0"
+          bottomRightCorner="0.0 -2.0 2.0"
+          upDirection="0.0 1.0 0.0">
+        <Viewpoint
+            position="-100.0 0.0 0.0"/>
+      </SpatialPlanarView>
+
+      <param name="tileLocation" value="1 0 1 1"/>
+      <SpatialPlanarView
+          topLeftCorner="-2.0 0.0 -2.0"
+          bottomRightCorner="2.0 0.0 2.0"
+          upDirection="0.0 0.0 -1.0">
+        <Viewpoint
+            position="0.0 100.0 0.0"/>
+      </SpatialPlanarView>
+
+      <param name="tileLocation" value="1 1 1 1"/>
+      <PosedPlanarView
+          fieldOfView="1 -1">
+        <Viewpoint
+            position="2.0 2.0 2.0"
+            lookAt="0.0 0.0 0.0"/>
+      </PosedPlanarView>
+    </TiledView>
+  </SdlWindow>
+
+</config>

@@ -1,0 +1,121 @@
+<config>
+
+  <SyncNode
+      localPeerIdx="0">
+    <param name="peer" value="172.19.2.10:20400"/>
+    <param name="peer" value="172.19.2.11:20401"/>
+    <param name="peer" value="172.19.2.12:20402"/>
+    <param name="peer" value="172.19.2.13:20403"/>
+    <param name="peer" value="172.19.2.14:20404"/>
+    <param name="peer" value="172.19.2.15:20405"/>
+    <param name="peer" value="172.19.2.16:20406"/>
+  </SyncNode>
+
+  <SphereGeometry
+      DEF="GEOMETRY"
+      radius="7.4"
+      frustumSizeRatio="1.1"
+      inside="true"/>
+
+  <SdlWindow
+      fullscreen="true"
+      GLMajor="3" GLMinor="3">
+
+    <SdlContext
+        useVideo="true"
+        useAudio="true"/>
+
+    <SphereRenderer
+        radius="8.4">
+      <EquirectangularCoordinatesMapper/>
+      <ImageTexture
+          file="urn:gramods:gmGraphics/resources/equirectangular-coordinates.png"/>
+    </SphereRenderer>
+
+    <SphereRenderer
+        radius="6.4">
+      <EquirectangularCoordinatesMapper/>
+      <ImageTexture
+          file="urn:gramods:gmGraphics/resources/equirectangular-field-of-vision.png"/>
+    </SphereRenderer>
+
+    <Viewpoint
+        position="0 0 0"/>
+
+    <TiledView>
+
+      <!--FOV left="58.865" right="58.865" up="70.238" down="-7.701" -->
+      <!--Orientation heading="-45.0" pitch="0.0" roll="0.0" -->
+      <param name="tileLocation" value="0 0 1 1"/>
+      <GeometryCorrectedProjectorView
+          bufferWidth="2048"
+          bufferHeight="2048"
+          clipAngles="d58.865 d58.865 d-7.701 d70.238"
+          orientation="ypr d-45.0 d0.0 d0.0"
+          linearInterpolation="on">
+        <Geometry USE="GEOMETRY"/>
+      </GeometryCorrectedProjectorView>
+
+      <!--FOV left="58.865" right="58.865" up="70.238" down="-7.701" -->
+      <!--Orientation heading="45.0" pitch="0.0" roll="0.0" -->
+      <param name="tileLocation" value="0 1 1 1"/>
+      <GeometryCorrectedProjectorView
+          bufferWidth="2048"
+          bufferHeight="2048"
+          clipAngles="d58.865 d58.865 d-7.701 d70.238"
+          orientation="ypr d45.0 d0.0 d0.0"
+          linearInterpolation="on">
+        <Geometry USE="GEOMETRY"/>
+      </GeometryCorrectedProjectorView>
+
+      <!--FOV left="58.865" right="58.865" up="70.238" down="-7.701" -->
+      <!--Orientation heading="135.0" pitch="0.0" roll="0.0" -->
+      <param name="tileLocation" value="0 2 1 1"/>
+      <GeometryCorrectedProjectorView
+          bufferWidth="2048"
+          bufferHeight="2048"
+          clipAngles="d58.865 d58.865 d-7.701 d70.238"
+          orientation="ypr d135.0 d0.0 d0.0"
+          linearInterpolation="on">
+        <Geometry USE="GEOMETRY"/>
+      </GeometryCorrectedProjectorView>
+
+      <!--FOV left="58.865" right="58.865" up="70.238" down="-7.701" -->
+      <!--Orientation heading="-135.0" pitch="0.0" roll="0.0" -->
+      <param name="tileLocation" value="1 0 1 1"/>
+      <GeometryCorrectedProjectorView
+          bufferWidth="2048"
+          bufferHeight="2048"
+          clipAngles="d58.865 d58.865 d-7.701 d70.238"
+          orientation="ypr d-135.0 d0.0 d0.0"
+          linearInterpolation="on">
+        <Geometry USE="GEOMETRY"/>
+      </GeometryCorrectedProjectorView>
+
+      <!--FOV left="58.992" right="58.992" up="55.336" down="11.608" -->
+      <!--Orientation heading="57.0" pitch="48.0" roll="0.0" -->
+      <param name="tileLocation" value="1 1 1 1"/>
+      <GeometryCorrectedProjectorView
+          bufferWidth="2048"
+          bufferHeight="2048"
+          clipAngles="d58.992 d58.992 d11.608 d55.336"
+          orientation="ypr d57.0 d48.0 d0.0"
+          linearInterpolation="on">
+        <Geometry USE="GEOMETRY"/>
+      </GeometryCorrectedProjectorView>
+
+      <!--FOV left="58.992" right="58.992" up="55.336" down="11.608" -->
+      <!--Orientation heading="-123.0" pitch="48.0" roll="0.0" -->
+      <param name="tileLocation" value="1 2 1 1"/>
+      <GeometryCorrectedProjectorView
+          bufferWidth="2048"
+          bufferHeight="2048"
+          clipAngles="d58.992 d58.992 d11.608 d55.336"
+          orientation="ypr d-123.0 d48.0 d0.0"
+          linearInterpolation="on">
+        <Geometry USE="GEOMETRY"/>
+      </GeometryCorrectedProjectorView>
+
+    </TiledView>
+  </SdlWindow>
+</config>

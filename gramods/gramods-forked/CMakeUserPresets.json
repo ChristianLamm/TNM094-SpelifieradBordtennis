@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "crille-dev",
+      "inherits": "tnm094-project",
+      "environment": {
+        "VCPKG_ROOT": "C:/Users/Christian/vcpkg"
+      }
+    }
+  ]
+}
