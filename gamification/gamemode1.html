@@ -58,7 +58,6 @@ How does it work?
         let smallMarker = PIXI.Sprite.from("images/yellowMarker.png");
         smallMarker.scale.set(0.5, 0.5); // Scale the marker to half its size
 
-       
         //-------------------------------------------------------------------------------------------------
         // GAMIFICATION
         //-------------------------------------------------------------------------------------------------
@@ -84,8 +83,7 @@ How does it work?
         }
 
         //hit detection function
-        function hitCheck(mySprite, myXCoord, myYCoord){
-
+        function hitCheck(mySprite, myXCoord, myYCoord) {
           //sprite x and y coordinate, top left of the sprite
           let spriteXCoord = mySprite.x;
           let spriteYCoord = mySprite.y;
@@ -94,19 +92,47 @@ How does it work?
           let spriteHeight = mySprite.height;
           let spriteWidth = mySprite.width;
 
-            if (
+          if (
             myXCoord >= spriteXCoord &&
             myXCoord <= spriteXCoord + spriteWidth &&
             myYCoord >= spriteYCoord &&
             myYCoord <= spriteYCoord + spriteHeight
-            ) {
+          ) {
             console.log("hit");
-            }
-
+            return true; // Return true for a hit
+          } else {
+            console.log("miss");
+            return false; // Return false for a miss
+          }
         }
 
-         //körs när meddelande tas emot från ws server
-         ws.onmessage = function (event) {
+        //function to generate two random coordinates
+        function generateRandomCoordinates(){
+          let newXPos = Math.random() * tableWidth;
+          let newYPos = Math.random() * tableHeight;
+
+          //making sure the new position is not outside of the table
+          if(newXPos < 0){
+            newXPos = 0;
+          }
+
+          if(newXPos > tableWidth){
+            newXPos = tableWidth;
+          }
+
+          if(newYPos < 0){
+            newYPos = 0;
+          }
+
+          if(newYPos > tableHeight){
+            newYPos = tableHeight;
+          }
+
+            return [newXPos, newYPos];
+        }
+
+        //körs när meddelande tas emot från ws server
+        ws.onmessage = function (event) {
           let eventDataValue = event.data; // Convert event.data to an integer
 
           let [xCoord, yCoord] = eventDataValue.split(",").map(Number);
@@ -138,8 +164,8 @@ How does it work?
 
           if (targetCounter % 5 == 0) {
             // Move the target to a new random position
-            let newTargetPosX = Math.random() * app.view.width;
-            let newTargetPosY = Math.random() * app.view.height;
+            let [newTargetPosX, newTargetPosY] = generateRandomCoordinates();
+            console.log(newTargetPosX)
 
             // Set a new position for the target
             if (newTargetPosX + target.width > app.view.width) {
@@ -173,23 +199,7 @@ How does it work?
           let x = event.clientX - rect.left;
           let y = event.clientY - rect.top;
 
-          // Calculate the middle coordinate of the target
-          let targetMiddleX = target.x + target.width / 2;
-          let targetMiddleY = target.y + target.height / 2;
-
-          // Calculate the range of coordinates that count as a hit
-          let underHitPointX = x - target.width / 2;
-          let overHitPointX = x + target.width / 2;
-          let underHitPointY = y - target.height / 2;
-          let overHitPointY = y + target.height / 2;
-
-          if (
-            // Hit detection
-            (underHitPointX < targetMiddleX) &
-            (overHitPointX > targetMiddleX) &
-            (underHitPointY < targetMiddleY) &
-            (overHitPointY > targetMiddleY)
-          ) {
+          if (hitCheck(target, x, y)) {
             console.log("You hit the target!");
           } else {
             // Missed shot
