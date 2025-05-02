@@ -8,7 +8,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
-
+#include <random>
 
 //
 struct Impl {
@@ -45,12 +45,28 @@ struct Impl {
 int main() {
     Impl impl("127.0.0.1", 12345);
 
+    //get some random numbers
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Define distributions
+    std::uniform_int_distribution<> dist1(0, 652);
+    std::uniform_int_distribution<> dist2(0, 593);
+
+    int random1 = 0;
+	int random2 = 0;
     //Tillfällig loop, ska bytas ut
     int count = 0;
     while (true) {
-        impl.send("Message number: " + std::to_string(count++));
+		//generate 2 random numbers
+        random1 = dist1(gen);
+        random2 = dist2(gen);
+
+        impl.send(std::to_string(random1) + "," + std::to_string(random2));
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
+
+    
 
 }
 
