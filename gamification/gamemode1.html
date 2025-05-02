@@ -31,6 +31,15 @@ How does it work?
         initializeApp,
       } from "./common.js";
 
+      //importera functions
+      import {
+        changeTexture,
+        changeTextureTemporarily,
+        hitCheck,
+        generateRandomCoordinates,
+        moveSprite,
+      } from "./functions.js";
+
       (async () => {
         const { app, scoreText, updateScoreText } = await initializeApp();
 
@@ -66,71 +75,6 @@ How does it work?
         target.interactive = true;
         target.buttonMode = true;
 
-        //functiont that changes the texture of a sprite
-        function changeTexture(targetSprite, newTexture) {
-          targetSprite.texture = newTexture;
-        }
-
-        // function that lets a sprite change texture temporarily
-
-        function changeTextureTemporarily(targetSprite, tempTexture) {
-          let originalTexture = targetSprite.texture;
-          changeTexture(targetSprite, tempTexture);
-
-          setTimeout(() => {
-            changeTexture(targetSprite, originalTexture);
-          }, 500); // 1000 milliseconds = 1 second
-        }
-
-        //hit detection function
-        function hitCheck(mySprite, myXCoord, myYCoord) {
-          //sprite x and y coordinate, top left of the sprite
-          let spriteXCoord = mySprite.x;
-          let spriteYCoord = mySprite.y;
-
-          //height and width of the sprite
-          let spriteHeight = mySprite.height;
-          let spriteWidth = mySprite.width;
-
-          if (
-            myXCoord >= spriteXCoord &&
-            myXCoord <= spriteXCoord + spriteWidth &&
-            myYCoord >= spriteYCoord &&
-            myYCoord <= spriteYCoord + spriteHeight
-          ) {
-            console.log("hit");
-            return true; // Return true for a hit
-          } else {
-            console.log("miss");
-            return false; // Return false for a miss
-          }
-        }
-
-        //function to generate two random coordinates
-        function generateRandomCoordinates(){
-          let newXPos = Math.random() * tableWidth;
-          let newYPos = Math.random() * tableHeight;
-
-          //making sure the new position is not outside of the table
-          if(newXPos < 0){
-            newXPos = 0;
-          }
-
-          if(newXPos > tableWidth){
-            newXPos = tableWidth;
-          }
-
-          if(newYPos < 0){
-            newYPos = 0;
-          }
-
-          if(newYPos > tableHeight){
-            newYPos = tableHeight;
-          }
-
-            return [newXPos, newYPos];
-        }
-
         //körs när meddelande tas emot från ws server
         ws.onmessage = function (event) {
           let eventDataValue = event.data; // Convert event.data to an integer
@@ -165,25 +109,14 @@ How does it work?
           if (targetCounter % 5 == 0) {
             // Move the target to a new random position
             let [newTargetPosX, newTargetPosY] = generateRandomCoordinates();
-            console.log(newTargetPosX)
 
             // Set a new position for the target
-            if (newTargetPosX + target.width > app.view.width) {
-              newTargetPosX = app.view.width - target.width;
-            }
-            if (newTargetPosY + target.height > app.view.height) {
-              newTargetPosY = app.view.height - target.height;
-            }
-            if (newTargetPosX < 0) {
-              newTargetPosX = 0;
-            }
-            if (newTargetPosY < 0) {
-              newTargetPosY = 0;
-            }
+
             changeTextureTemporarily(target, virus_deadText);
             setTimeout(() => {
               target.x = newTargetPosX;
               target.y = newTargetPosY;
+              moveSprite(target, newTargetPosX, newTargetPosY);
             }, 500);
           } else {
             changeTextureTemporarily(target, virus_dmgTex);

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://pixijs.download/release/pixi.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- <h1>Spelifierad <br />bordtennisträning</h1>
+    <h1>hej</h1>
+    <nav><a href="getCoords.html"></a></nav> -->
+
+    <script type="module">
+      //setting up the websocket
+      //WebSocket-anslutning, öppnas till server på local port 8080
+      const ws = new WebSocket("ws://localhost:8080");
+
+      let eventDataValue = 0;
+
+      // importing the stage
+      import {
+        tableWidth,
+        tableHeight,
+        bgBlue,
+        white,
+        initializeApp,
+      } from "./common.js";
+
+      //CHANGE THIS. importera funktioner här
+      import { wiggleSprite } from "./functions.js";
+
+      (async () => {
+        const { app, scoreText, updateScoreText } = await initializeApp();
+        // Create the target sprite
+        await PIXI.Assets.load("images/yellowMarker.png");
+        let marker = PIXI.Sprite.from("images/yellowMarker.png");
+        app.stage.addChild(marker);
+        //-------------------------GAMECODE GOES HERE--------------------------
+        //load images and set them as variables
+        //making sure that the enemies wiggle all the time
+        app.ticker.add(() => {
+          wiggleSprite(marker);
+        });
+      })();
+    </script>
+  </body>
+</html>
