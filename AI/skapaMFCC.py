@@ -4,7 +4,7 @@ import librosa
 import numpy as np
 import pandas as pd
 
-# Parameters
+# Parameters linus_wav_folder is path to audiofile 
 linus_wav_folder = r'C:\Users\pette\OneDrive\Skrivbord\Kandidat\AI\liu-tnm119-projekt\MFCC\linus_data_wav\negative_linus_data_wav'
 synthetic_folder = '.'
 output_csv_path = 'not_pingpong_mfccs.csv'
@@ -12,7 +12,7 @@ output_csv_path = 'not_pingpong_mfccs.csv'
 # Collect all MFCCs here
 mfcc_records = []
 
-# --- Rename numeric files to pong_<number>.wav ---
+#  Rename numeric files to pong_(number).wav 
 for filename in os.listdir(linus_wav_folder):
     if os.path.isfile(os.path.join(linus_wav_folder, filename)):
         name, ext = os.path.splitext(filename)
@@ -23,7 +23,7 @@ for filename in os.listdir(linus_wav_folder):
                 os.path.join(linus_wav_folder, new_name)
             )
 
-# --- Process Linus data (each file contains one bounce) ---
+#  Process Linus data 
 for filename in sorted(os.listdir(linus_wav_folder)):
     if filename.endswith('.wav'):
         file_path = os.path.join(linus_wav_folder, filename)
@@ -46,7 +46,7 @@ for filename in sorted(os.listdir(linus_wav_folder)):
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
 
-# --- Optionally process synthetic data ---
+# process synthetic data
 for i in range(1, 5):
     file_name = f'synthetic_{i}.wav'
     file_path = os.path.join(synthetic_folder, file_name)
@@ -70,7 +70,7 @@ for i in range(1, 5):
     except Exception as e:
         print(f"Error processing {file_path}: {e}")
 
-# --- Save all MFCCs into one CSV ---
+# Save all MFCCs into one CSV 
 df_all = pd.DataFrame(mfcc_records)
 df_all.to_csv(output_csv_path, index=False)
 print(f"\n✅ All MFCCs saved to: {output_csv_path}")
