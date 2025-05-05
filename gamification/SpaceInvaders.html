@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://pixijs.download/release/pixi.min.js"></script>
+    <title>Space Invaders Ping Pong</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script type="module">
+        import { initializeApp } from "./game.js";
+        
+        const ws = new WebSocket("ws://localhost:8080");
+        
+        (async () => {
+            const { app, updateHealthDisplay } = await initializeApp();
+            
+            // Load game assets
+            await PIXI.Assets.init();
+            const textures = await PIXI.Assets.load([
+                './images/martianWithFullHealth.png',
+                './images/eld.png',
+                './images/virus.png',
+                './images/lifebar4.png',
+                './images/lifebar3.png',
+                './images/lifebar2.png',
+                './images/lifebar1.png',
+                './images/lifebar1.png',
+                './images/yellowMarker.png'
+            ]);
+
+            // Game objects
+            const alien = new PIXI.Sprite(textures['./images/martianWithFullHealth.png']);
+            alien.anchor.set(0.5);
+            alien.width = 120;
+            alien.height = 80;
+            alien.position.set(app.screen.width / 2, 100);
+            app.stage.addChild(alien);
+
+            const tower = new PIXI.Sprite(textures['./images/virus.png']);
+            tower.anchor.set(0.5);
+            tower.width = 80;
+            tower.height = 120;
+            tower.position.set(app.screen.width / 2, app.screen.height - 80);
+            app.stage.addChild(tower);
+
+            // Game state
+            let alienHealth = 4;
+            updateHealthDisplay(alienHealth);
+            const hitMarkers = [];
+            const activeLasers = [];
+
+            // Tower health display
+            let towerHealth = 100;
+            const towerHealthText = new PIXI.Text({
+                text: `Tower Health: ${towerHealth}`,
+                style: {
+                    fontFamily: "Arial",
+                    fontSize: 24,
+                    fill: 0xFFFFFF
+                }
+            });
+            towerHealthText.x = 20;
+            towerHealthText.y = 20;
+            app.stage.addChild(towerHealthText);
+
+            // Laser function
+            const createLaser = () => {
+                if (alienHealth <= 0) return;
+                
+                const laser = new PIXI.Sprite(textures['./images/eld.png']);
+                laser.anchor.set(0.5);
+                laser.width = 120;
+                laser.height = 60;
+                laser.position.set(alien.x, alien.y + 40);
+                app.stage.addChild(laser);
+                activeLasers.push(laser);
+            };
+
+            // Automatic shooting
+            const shootInterval = setInterval(createLaser, 2000);
+            
+           // WebSocket handler for hit coordinates
+ws.onmessage = (event) => {
+    try {
+        const data = JSON.parse(event.data);
+        
+        // Only process if it's a coordinate message
+        if (data.type === 'HIT_COORDS' && data.x && data.y) {
+            // Create hit marker
+            const marker = new PIXI.Sprite(textures['./images/yellowMarker.png']);
+            marker.anchor.set(0.5);
+            marker.width = 30;
+            marker.height = 30;
+            marker.position.set(
+                data.x * app.screen.width, 
+                data.y * app.screen.height
+            );
+            app.stage.addChild(marker);
+            
+            // Check if hit alien
+            const alienBounds = alien.getBounds();
+            if (marker.x > alienBounds.x && marker.x < alienBounds.x + alienBounds.width &&
+                marker.y > alienBounds.y && marker.y < alienBounds.y + alienBounds.height) {
+                alienHealth--;
+                updateHealthDisplay(alienHealth);
+                //createLaser(); // Alien shoots back when hit
+                
+                // Send hit confirmation to server if needed
+                ws.send(JSON.stringify({ 
+                    type: 'ALIEN_HIT',
+                    health: alienHealth 
+                }));
+            }
+            
+            // Remove marker after delay
+            setTimeout(() => {
+                if (marker.parent) { // Check if marker still exists
+                    app.stage.removeChild(marker);
+                }
+            }, 500);
+        }
+    } catch (e) {
+        console.error("Error parsing WebSocket data:", e);
+    }
+};
+            
+            // Game loop
+            let alienDirection = 1;
+            app.ticker.add(() => {
+                // Alien movement
+                if (alienHealth > 0) {
+                    alien.x += 2 * alienDirection;
+                    if (alien.x > app.screen.width - 50 || alien.x < 50) {
+                        alienDirection *= -1;
+                    }
+                }
+                
+                // Laser movement
+                for (let i = activeLasers.length - 1; i >= 0; i--) {
+                    const laser = activeLasers[i];
+                    laser.y += 8;
+                    
+                    // Tower collision
+                    if (laser.y >= tower.y - tower.height/2 && 
+                        laser.x >= tower.x - tower.width/2 && 
+                        laser.x <= tower.x + tower.width/2) {
+                        app.stage.removeChild(laser);
+                        activeLasers.splice(i, 1);
+                        
+                        // Update tower health
+                        towerHealth -= 10;
+                        towerHealthText.text = `Tower Health: ${towerHealth}`;
+                        ws.send("TOWER_HIT");
+                        
+                        if (towerHealth <= 0) {
+                            tower.texture = PIXI.Texture.from('./images/virus_dead.png');
+                            towerHealthText.text = "Tower Destroyed!";
+                            clearInterval(shootInterval);
+                        }
+                        continue;
+                    }
+                    
+                    // Remove off-screen lasers
+                    if (laser.y > app.screen.height) {
+                        app.stage.removeChild(laser);
+                        activeLasers.splice(i, 1);
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
