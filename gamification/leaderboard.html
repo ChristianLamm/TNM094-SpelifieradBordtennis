@@ -11,8 +11,47 @@
     />
     <link rel="stylesheet" href="leaderboard.css" />
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   </head>
   <body>
     <h1>Topplistan</h1>
+    <ul id="leaderboard-list">
+
+    </ul>
+
+    <script>
+      const SUPABASE_URL = 'https://usvpcmzfwcpkssybobgy.supabase.co'; // Replace with your Supabase URL
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzdnBjbXpmd2Nwa3NzeWJvYmd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTkzNzIsImV4cCI6MjA2MjA5NTM3Mn0.vWPc9AXRODxhBQP14iQID75i3SZRZZZ1mX_WwlN_cQM'; // Replace with your anon key
+      const { createClient } = supabase;
+      const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+      async function fetchLeaderboard() {
+        const { data, error } = await client
+          .from('Leaderboard') // Table name
+          .select('name, points')
+          .order('points', { ascending: false });
+    
+        const list = document.getElementById('leaderboard-list');
+        data.forEach((entry) => {
+          const li = document.createElement('li');
+          li.textContent = `${entry.name}` + " " + `${entry.points}`;
+          list.appendChild(li);
+        });
+        console.log(data[0]);
+      }
+    
+      fetchLeaderboard();
+      
+    </script>
+
+    
+<style>
+
+  #leaderboard-list {
+    color: white;
+    font-size: 1.2em;
+  }
+</style>
+    
   </body>
 </html>

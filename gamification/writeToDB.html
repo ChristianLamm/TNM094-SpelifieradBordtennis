@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add to Leaderboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        color: white;
+        padding: 2rem;
+      }
+      input, button {
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        border: none;
+        border-radius: 4px;
+      }
+      input {
+        width: 200px;
+      }
+      button {
+        background-color: #1e90ff;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lägg till spelare</h1>
+    <form id="entry-form">
+      <label for="name">Namn:</label><br />
+      <input type="text" id="name" name="name" required /><br />
+      <label for="points">Poäng:</label><br />
+      <input type="number" id="points" name="points" required /><br />
+      <button type="submit">Skicka</button>
+    </form>
+
+    <script>
+      const SUPABASE_URL = 'https://usvpcmzfwcpkssybobgy.supabase.co'; // Replace with your URL
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzdnBjbXpmd2Nwa3NzeWJvYmd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTkzNzIsImV4cCI6MjA2MjA5NTM3Mn0.vWPc9AXRODxhBQP14iQID75i3SZRZZZ1mX_WwlN_cQM'; // Replace with your anon key
+
+      const { createClient } = supabase;
+      const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      document.getElementById('entry-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const points = parseInt(document.getElementById('points').value);
+
+        const { data, error } = await client
+          .from('Leaderboard') // Replace with your table name
+          .insert([{ name, points }]);
+
+        if (error) {
+          console.error('Error inserting data:', error);
+        } else {
+          console.log('Data inserted:', data);
+          alert('Spelare tillagd!');
+          document.getElementById('entry-form').reset();
+        }
+      });
+    </script>
+  </body>
+</html>

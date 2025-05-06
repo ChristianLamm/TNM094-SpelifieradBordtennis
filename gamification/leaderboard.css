@@ -11,3 +11,9 @@ h1{
     font-family: 'Big Shoulders Inline', cursive;
     font-size: 3em;
 }
+
+ul{
+    list-style-type: none;
+    width: 100;
+    text-align: center;
+}
