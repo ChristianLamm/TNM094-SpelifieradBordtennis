@@ -41,17 +41,11 @@
         app.stage.addChild(marker);
         //-------------------------GAMECODE GOES HERE--------------------------
         //load images and set them as variables
-        // Load alien textures and set them as variables
-        const alienTextures = new Array(4);
-        for (let i = 0; i <= 4; i++) {
-          await PIXI.Assets.load("images/alien/alienhp"+ i + ".png");
-          alienTextures.push(PIXI.Texture.from("images/alien/alienhp" + i + ".png"));
-        }
+        //making sure that the enemies wiggle all the time
+        app.ticker.add(() => {
+          wiggleSprite(marker);
+        });
       })();
-
-      // Create the alien sprite with the first texture
-      let alien = new PIXI.Sprite(alienTextures[1]);
-      app.stage.addChild(alien); // Add the alien to the stage
     </script>
   </body>
 </html>
