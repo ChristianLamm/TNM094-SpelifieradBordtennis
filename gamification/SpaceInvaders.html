@@ -24,13 +24,14 @@
             const textures = await PIXI.Assets.load([
                 './images/martianWithFullHealth.png',
                 './images/eld.png',
-                './images/virus.png',
+                './images/shroomHouse2.png',
                 './images/lifebar4.png',
                 './images/lifebar3.png',
                 './images/lifebar2.png',
                 './images/lifebar1.png',
                 './images/lifebar1.png',
                 './images/yellowMarker.png'
+                
             ]);
 
             // Game objects
@@ -41,11 +42,13 @@
             alien.position.set(app.screen.width / 2, 100);
             app.stage.addChild(alien);
 
-            const tower = new PIXI.Sprite(textures['./images/virus.png']);
+            const tower = new PIXI.Sprite(textures['./images/shroomHouse2.png']);
             tower.anchor.set(0.5);
             tower.width = 80;
             tower.height = 120;
             tower.position.set(app.screen.width / 2, app.screen.height - 80);
+
+            tower.scale.set(0.04); // Scale the tower to make it bigger
             app.stage.addChild(tower);
 
             // Game state
