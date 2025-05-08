@@ -103,7 +103,38 @@ export function wiggleSprite(mySprite) {
   const interval3 = setInterval(() => {
     mySprite.x += stepSize;
   }, timeOut);
+}
 
+export function countdownClock(minutes, seconds, onComplete) {
+  let totalSeconds = minutes * 60 + seconds;
 
+  const interval = setInterval(() => {
+    const currentMinutes = Math.floor(totalSeconds / 60);
+    const currentSeconds = totalSeconds % 60;
 
+    let timeString = `Time left: ${currentMinutes}:${
+      currentSeconds < 10 ? "0" : ""
+    }${currentSeconds}`;
+    console.log(timeString);
+
+    if (totalSeconds <= 0) {
+      clearInterval(interval);
+      onComplete(); // Perform the function when countdown ends
+    } else {
+      totalSeconds--;
+    }
+    timerText.text = `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds}`;
+
+  }, 1000); // Update every second
+}
+
+export function closePixiWindow(app) {
+  // Destroy the PIXI application
+
+  // Remove the canvas element from the DOM
+  if (app.view && app.view.parentNode) {
+    app.view.parentNode.removeChild(app.view);
+  }
+
+  console.log("PIXI window closed.");
 }

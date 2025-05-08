@@ -8,9 +8,59 @@ How does it work?
 <html>
   <head>
     <script src="https://pixijs.download/release/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <script>
+      //connecting to the database and saving the score
+      const SUPABASE_URL = "https://usvpcmzfwcpkssybobgy.supabase.co"; // Replace with your URL
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzdnBjbXpmd2Nwa3NzeWJvYmd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTkzNzIsImV4cCI6MjA2MjA5NTM3Mn0.vWPc9AXRODxhBQP14iQID75i3SZRZZZ1mX_WwlN_cQM"; // Replace with your anon key
+
+      const { createClient } = supabase;
+      const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      //now the db is connected
+    </script>
+
+    <section id="gameOver">
+      <form id="scoreForm">
+        <label for="playerName">Name:</label>
+        <input type="text" id="playerName" name="playerName" required />
+        <button type="submit">Save Score</button>
+      </form>
+      <a href="index.html">Hem</a>
+    </section>
+
+    <script>
+      function saveScore(finalScore) {
+        const form = document.getElementById("scoreForm");
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const playerName = document.getElementById("playerName").value;
+          //const score = targetCounter; // Assuming targetCounter holds the score
+
+          try {
+            const { data, error } = await client
+              .from("Leaderboard")
+              .insert([{ name: playerName, points: finalScore }]);
+
+            if (error) {
+              console.error("Error saving score:", error);
+            } else {
+              console.log("Score saved successfully:", data);
+              alert("Score saved successfully!");
+            }
+          } catch (err) {
+            console.error("Unexpected error:", err);
+          }
+
+          form.style.pointerEvents = "none";
+        });
+      }
+    </script>
     <!-- <h1>Spelifierad <br />bordtennisträning</h1>
     <h1>hej</h1>
     <nav><a href="getCoords.html"></a></nav> -->
@@ -38,7 +88,13 @@ How does it work?
         hitCheck,
         generateRandomCoordinates,
         moveSprite,
+        countdownClock,
+        closePixiWindow,
       } from "./functions.js";
+
+      function hello() {
+        console.log("hello");
+      }
 
       (async () => {
         const { app, scoreText, updateScoreText } = await initializeApp();
@@ -148,6 +204,60 @@ How does it work?
             console.log(`Mouse clicked at x: ${x}, y: ${y}`);
           }
         }
+
+        // Function to close down the PixiJS app
+        let finalScore = 0;
+        function closeApp() {
+          finalScore = targetCounter;
+          window.removeEventListener("click", onClick);
+          app.destroy(true, {
+            children: true,
+            texture: true,
+            baseTexture: true,
+          });
+
+          console.log("PixiJS app has been closed.");
+
+          saveScore(finalScore);
+        }
+        console.log(finalScore);
+
+        //counting down and then closing the window
+        //how much time do you want to play?
+        let minutes = 2;
+        let seconds = 0;
+        // Create a text object to display the countdown timer
+        const timerText = new PIXI.Text(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`, {
+          fontFamily: 'Arial',
+          fontSize: 36,
+          fill: 'white',
+        });
+        timerText.x = app.view.width - 100; // Position it on the top-right corner
+        timerText.y = 20;
+        app.stage.addChild(timerText);
+
+        // Update the countdown timer every second
+        const timerInterval = setInterval(() => {
+          if (seconds === 0) {
+            if (minutes === 0) {
+              clearInterval(timerInterval); // Stop the timer when it reaches 0
+              closeApp(); // Call the closeApp function
+              return;
+            } else {
+              minutes -= 1;
+              seconds = 59;
+            }
+          } else {
+            seconds -= 1;
+          }
+
+          // Update the timer text
+          timerText.text = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }, 1000);
+        //countdownClock(minutes, seconds, closeApp);
+        
+
+
       })();
     </script>
   </body>
