@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate Converter</title>
+</head>
+<body>
+    <h1>Coordinate Converter</h1>
+    <div id="status">Waiting for connection...</div>
+    <div id="coordinates">No coordinates received yet</div>
+    <div id="dimensions">Game dimensions: Calculating...</div>
+    
+    <script type="module">
+        // Import tableWidth and tableHeight from common.js
+        import { tableWidth, tableHeight } from './common.js';
+        
+        // Define table dimensions (modify these to match your actual table dimensions)
+        const TABLE_WIDTH_MM = 2740; // Standard table tennis table width in mm
+        const TABLE_HEIGHT_MM = 1525; // Standard table tennis table height in mm
+        
+        // Get game dimensions from common.js
+        document.getElementById('dimensions').textContent = `Game dimensions: ${tableWidth}x${tableHeight}`;
+        console.log(`Game dimensions from common.js: ${tableWidth}x${tableHeight}`);
+
+        // Function to parse coordinates from string format "X329Y692"
+        function parseCoordinates(coordString) {
+            // Extract X and Y values using regex
+            const xMatch = coordString.match(/X(\d+)/);
+            const yMatch = coordString.match(/Y(\d+)/);
+            
+            if (!xMatch || !yMatch) {
+                console.error("Invalid coordinate format:", coordString);
+                return null;
+            }
+            
+            // Convert to numbers
+            const xMm = parseInt(xMatch[1], 10);
+            const yMm = parseInt(yMatch[1], 10);
+            
+            return [xMm, yMm];
+        }
+
+        // Function to convert millimeter coordinates to game coordinates
+        function convertToGameCoordinates(xMm, yMm) {
+            // Convert mm coordinates to proportional game coordinates
+            const xGame = Math.round((xMm / TABLE_WIDTH_MM) * tableWidth);
+            const yGame = Math.round((yMm / TABLE_HEIGHT_MM) * tableHeight);
+            
+            return [xGame, yGame];
+        }
+
+        // Connect to the input WebSocket server (from MATLAB)
+        const inputSocket = new WebSocket('ws://localhost:3001');
+        
+        // Connect to your game's WebSocket server
+        const gameSocket = new WebSocket('ws://localhost:12345');
+        
+        // Status elements
+        const statusDiv = document.getElementById('status');
+        const coordDiv = document.getElementById('coordinates');
+
+        // Handle incoming messages from MATLAB
+        inputSocket.onmessage = function(event) {
+            const coordString = event.data;
+            console.log('Received from MATLAB:', coordString);
+            coordDiv.textContent = `Raw input: ${coordString}`;
+            
+            // Parse the coordinates
+            const mmCoords = parseCoordinates(coordString);
+            if (!mmCoords) {
+                coordDiv.textContent += ' (Invalid format)';
+                return;
+            }
+            
+            const [xMm, yMm] = mmCoords;
+            
+            // Convert to game coordinates
+            const [xGame, yGame] = convertToGameCoordinates(xMm, yMm);
+            
+            coordDiv.textContent += ` → MM: (${xMm}, ${yMm}) → Game: (${xGame}, ${yGame})`;
+            
+            // Send to game if game socket is connected
+            if (gameSocket.readyState === WebSocket.OPEN) {
+                gameSocket.send(`${xGame},${yGame}`);
+                console.log(`Sent to game: ${xGame},${yGame}`);
+            } else {
+                console.warn('Game socket not connected. Cannot send coordinates.');
+            }
+        };
+
+        // Handle connections
+        inputSocket.onopen = function() {
+            statusDiv.textContent = 'Connected to MATLAB WebSocket server';
+            console.log('Connected to MATLAB WebSocket server');
+        };
+
+        gameSocket.onopen = function() {
+            statusDiv.textContent += ' | Connected to Game WebSocket server';
+            console.log('Connected to Game WebSocket server');
+        };
+
+        // Handle disconnections
+        inputSocket.onclose = function() {
+            statusDiv.textContent = 'Disconnected from MATLAB WebSocket server';
+            console.log('Disconnected from MATLAB WebSocket server');
+            // You might want to implement reconnection logic here
+        };
+
+        gameSocket.onclose = function() {
+            statusDiv.textContent = statusDiv.textContent.replace(' | Connected to Game WebSocket server', ' | Disconnected from Game WebSocket server');
+            console.log('Disconnected from Game WebSocket server');
+            // You might want to implement reconnection logic here
+        };
+
+        // Handle errors
+        inputSocket.onerror = function(error) {
+            console.error('MATLAB WebSocket error:', error);
+        };
+
+        gameSocket.onerror = function(error) {
+            console.error('Game WebSocket error:', error);
+        };
+    </script>
+</body>
+</html>
