@@ -82,9 +82,17 @@
 
           let xCoord = 0;
           let yCoord = 0;
+
+          let originalMaxX = 1250;
+          let originalMaxY = 1370;
           if (match) {
             xCoord = parseInt(match[1]);
             yCoord = parseInt(match[2]);
+
+            xCoord = (xCoord / originalMaxX) * tableWidth;
+            yCoord = (yCoord / originalMaxY) * tableHeight;
+
+
             console.log(
               `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
             );
@@ -95,7 +103,13 @@
             );
           }
 
-          
+    // const originalMaxX = 1250;
+    // const originalMaxY = 1370;
+
+    
+
+    
+
 
           // Place the marker at the hit location
           smallMarker.x = xCoord - smallMarker.width / 2;
