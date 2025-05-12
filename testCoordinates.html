@@ -13,7 +13,7 @@
     
     <script type="module">
         // Import tableWidth and tableHeight from common.js
-        import { tableWidth, tableHeight } from './common.js';
+        import { tableWidth, tableHeight } from './gamification/common.js';
         
         // Define table dimensions (modify these to match your actual table dimensions)
         const TABLE_WIDTH_MM = 2740; // Standard table tennis table width in mm
@@ -54,7 +54,7 @@
         const inputSocket = new WebSocket('ws://localhost:3001');
         
         // Connect to your game's WebSocket server
-        const gameSocket = new WebSocket('ws://localhost:12345');
+        const gameSocket = new WebSocket('ws://localhost:5050');
         
         // Status elements
         const statusDiv = document.getElementById('status');

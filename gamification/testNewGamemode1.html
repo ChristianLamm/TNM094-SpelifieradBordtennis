@@ -7,7 +7,7 @@
   <body>
     <script type="module">
       //setting up the websocket - this will receive coordinates in format "xCoord,yCoord"
-      const ws = new WebSocket("ws://localhost:12345");
+      const ws = new WebSocket("ws://localhost:3001");
 
       // importing the stage
       import {
@@ -29,8 +29,10 @@
 
       (async () => {
         const { app, scoreText, updateScoreText } = await initializeApp();
-        
-        console.log(`Game initialized with dimensions: ${tableWidth}x${tableHeight}`);
+
+        console.log(
+          `Game initialized with dimensions: ${tableWidth}x${tableHeight}`
+        );
 
         //-------------------------GAMECODE GOES HERE--------------------------
         //load images and set them as variables
@@ -45,12 +47,12 @@
         // Create the target and add it to the stage
         let target = new PIXI.Sprite(virusTex);
         target.scale.set(0.5, 0.5); // Scale the target to half its size
-        
+
         // Start with the target in a random position
         let [startX, startY] = generateRandomCoordinates();
         target.x = startX;
         target.y = startY;
-        
+
         app.stage.addChild(target);
 
         // Create the marker
@@ -74,16 +76,32 @@
         ws.onmessage = function (event) {
           let eventDataValue = event.data; // This will be in format "xCoord,yCoord"
           console.log("Received coordinates:", eventDataValue);
+
+          // Make the parsing case-insensitive and consistent
+          let match = eventDataValue.match(/X(\d+).*Y(\d+)/i);
+
+          let xCoord = 0;
+          let yCoord = 0;
+          if (match) {
+            xCoord = parseInt(match[1]);
+            yCoord = parseInt(match[2]);
+            console.log(
+              `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
+            );
+          } else {
+            console.error(
+              "Failed to parse coordinates from string:",
+              eventDataValue
+            );
+          }
+
           
-          // Parse the coordinates from the "xCoord,yCoord" format
-          let [xCoord, yCoord] = eventDataValue.split(",").map(Number);
-          console.log(`Parsed game coordinates: (${xCoord}, ${yCoord})`);
-          
+
           // Place the marker at the hit location
           smallMarker.x = xCoord - smallMarker.width / 2;
           smallMarker.y = yCoord - smallMarker.height / 2;
           app.stage.addChild(smallMarker);
-          
+
           // Check if the hit is on target
           if (hitCheck(target, xCoord, yCoord)) {
             console.log("Hit on target!");

@@ -4,6 +4,10 @@ soundMicA = bandpass(soundMicA,[7500, 8500], Fs);
 soundMicB = bandpass(soundMicB,[7500, 8500], Fs);
 soundMicC = bandpass(soundMicC,[7500, 8500], Fs);
 
+% soundMicA = bandpass(soundMicA, [6000, 10000], Fs);
+% soundMicB = bandpass(soundMicB, [6000, 10000], Fs);
+% soundMicC = bandpass(soundMicC, [6000, 10000], Fs);
+
 % Compute the cross-correlation between the two signals
 [correlationAB, lagAB] = xcorr(soundMicA, soundMicB);
 [correlationAC, lagAC] = xcorr(soundMicA, soundMicC);
