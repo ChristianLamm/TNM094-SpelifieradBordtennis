@@ -10,6 +10,7 @@ How does it work?
     <script src="https://pixijs.download/release/pixi.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <link rel="stylesheet" href="style.css" />
+    <title>Skjuta virus</title>
   </head>
   <body>
     <script>
@@ -133,18 +134,57 @@ How does it work?
 
         //körs när meddelande tas emot från ws server
         ws.onmessage = function (event) {
-          let eventDataValue = event.data; // Convert event.data to an integer
+          let eventDataValue = event.data; // This will be in format "xCoord,yCoord"
+          console.log("Received coordinates:", eventDataValue);
 
-          let [xCoord, yCoord] = eventDataValue.split(",").map(Number);
+          // Make the parsing case-insensitive and consistent
+          let match = eventDataValue.match(/X(\d+).*Y(\d+)/i);
+
+          let xCoord = 0;
+          let yCoord = 0;
+          if (match) {
+            xCoord = parseInt(match[1]);
+            yCoord = parseInt(match[2]);
+            console.log(
+              `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
+            );
+          } else {
+            console.error(
+              "Failed to parse coordinates from string:",
+              eventDataValue
+            );
+          }
+
+          // Place the marker at the hit location
           smallMarker.x = xCoord - smallMarker.width / 2;
           smallMarker.y = yCoord - smallMarker.height / 2;
           app.stage.addChild(smallMarker);
-          hitCheck(target, xCoord, yCoord);
 
+          // Check if the hit is on target
+          if (hitCheck(target, xCoord, yCoord)) {
+            console.log("Hit on target!");
+            targetCounter += 1;
+            updateScoreText(targetCounter);
+
+            if (targetCounter % 5 == 0) {
+              // Move the target to a new random position after 5 hits
+              let [newTargetPosX, newTargetPosY] = generateRandomCoordinates();
+
+              changeTextureTemporarily(target, virus_deadText);
+              setTimeout(() => {
+                target.x = newTargetPosX;
+                target.y = newTargetPosY;
+                moveSprite(target, newTargetPosX, newTargetPosY);
+              }, 500);
+            } else {
+              changeTextureTemporarily(target, virus_dmgTex);
+            }
+          }
+
+          // Remove the marker after a delay
           setTimeout(() => {
             app.stage.removeChild(smallMarker);
           }, 1000);
-          console.log(eventDataValue);
         };
 
         //kör när meddelande inte tas emot
@@ -200,9 +240,8 @@ How does it work?
             setTimeout(() => {
               app.stage.removeChild(marker);
             }, 1000);
-
-            console.log(`Mouse clicked at x: ${x}, y: ${y}`);
           }
+          console.log(`Mouse clicked at x: ${x}, y: ${y}`);
         }
 
         // Function to close down the PixiJS app
@@ -227,11 +266,14 @@ How does it work?
         let minutes = 2;
         let seconds = 0;
         // Create a text object to display the countdown timer
-        const timerText = new PIXI.Text(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`, {
-          fontFamily: 'Arial',
-          fontSize: 36,
-          fill: 'white',
-        });
+        const timerText = new PIXI.Text(
+          `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`,
+          {
+            fontFamily: "Arial",
+            fontSize: 36,
+            fill: "white",
+          }
+        );
         timerText.x = app.view.width - 100; // Position it on the top-right corner
         timerText.y = 20;
         app.stage.addChild(timerText);
@@ -252,12 +294,9 @@ How does it work?
           }
 
           // Update the timer text
-          timerText.text = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+          timerText.text = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
         }, 1000);
         //countdownClock(minutes, seconds, closeApp);
-        
-
-
       })();
     </script>
   </body>
