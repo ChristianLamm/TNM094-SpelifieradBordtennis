@@ -36,6 +36,7 @@ matlabSocket.on('message', (data) => {
   });
 });
 
+//skickar till porten 3001
 server.listen(3001, () => {
   console.log('WebSocket relay server running at http://localhost:3001');
 });
