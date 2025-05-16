@@ -4,6 +4,12 @@ import librosa
 import joblib
 import time
 from collections import deque
+import websocket  # install via: pip install websocket-client
+import json
+
+# Connect to WebSocket server
+ws = websocket.WebSocket()
+ws.connect("ws://localhost:8080")
 
 # Load trained model
 model = joblib.load("AI/random_forest_model.pkl")
@@ -65,6 +71,14 @@ try:
                 print(counter)
                 counter += 1
                 last_detection_time = current_time
+
+                msg = {
+                    "event": "ping_pong_detected",
+                    "confidence": round(proba, 2),
+                    "timestamp": time.time(),
+                    "count": counter
+                }
+                ws.send(json.dumps(msg))
 
 except KeyboardInterrupt:
     print("\n🛑 Stopped listening.")

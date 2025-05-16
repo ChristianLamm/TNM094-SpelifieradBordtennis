@@ -36,6 +36,24 @@ matlabSocket.on('message', (data) => {
   });
 });
 
+// Add to Node.js script:
+const pythonWSS = new WebSocket.Server({ port: 8080 });
+pythonWSS.on('connection', (socket) => {
+  console.log('Python connected');
+
+  socket.on('message', (msg) => {
+    console.log('From Python:', msg.toString());
+
+    // Forward to all browser clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(msg.toString());
+      }
+    });
+  });
+});
+
+
 //skickar till porten 3001
 server.listen(3001, () => {
   console.log('WebSocket relay server running at http://localhost:3001');

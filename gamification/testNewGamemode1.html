@@ -73,60 +73,63 @@
         target.buttonMode = true;
 
         //körs när meddelande tas emot från ws server
+        let latestCoords = [null, null];
+
         ws.onmessage = function (event) {
-          let eventDataValue = event.data; // This will be in format "xCoord,yCoord"
-          console.log("Received coordinates:", eventDataValue);
+          const raw = event.data;
 
-          // Make the parsing case-insensitive and consistent
-          let match = eventDataValue.match(/X(\d+).*Y(\d+)/i);
+          try {
+            const data = JSON.parse(raw);
 
-          let xCoord = 0;
-          let yCoord = 0;
-          if (match) {
-            xCoord = parseInt(match[1]);
-            yCoord = parseInt(match[2]);
-            console.log(
-              `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
-            );
-          } else {
-            console.error(
-              "Failed to parse coordinates from string:",
-              eventDataValue
-            );
-          }
+            // 🟣 Message from Python
+            if (data.event === "ping_pong_detected") {
+              console.log("🔔 Ping pong detected from Python!");
 
-          
+              if (latestCoords[0] !== null && latestCoords[1] !== null) {
+                // Use the latest coordinates from MATLAB
+                const xCoord = latestCoords[0];
+                const yCoord = latestCoords[1];
 
-          // Place the marker at the hit location
-          smallMarker.x = xCoord - smallMarker.width / 2;
-          smallMarker.y = yCoord - smallMarker.height / 2;
-          app.stage.addChild(smallMarker);
+                smallMarker.x = xCoord - smallMarker.width / 2;
+                smallMarker.y = yCoord - smallMarker.height / 2;
+                app.stage.addChild(smallMarker);
 
-          // Check if the hit is on target
-          if (hitCheck(target, xCoord, yCoord)) {
-            console.log("Hit on target!");
-            targetCounter += 1;
-            updateScoreText(targetCounter);
+                if (hitCheck(target, xCoord, yCoord)) {
+                  console.log("✅ Hit on target!");
+                  targetCounter += 1;
+                  updateScoreText(targetCounter);
 
-            if (targetCounter % 5 == 0) {
-              // Move the target to a new random position after 5 hits
-              let [newTargetPosX, newTargetPosY] = generateRandomCoordinates();
+                  if (targetCounter % 5 == 0) {
+                    let [newTargetPosX, newTargetPosY] =
+                    generateRandomCoordinates();
+                    changeTextureTemporarily(target, virus_deadText);
+                    setTimeout(() => {
+                      target.x = newTargetPosX;
+                      target.y = newTargetPosY;
+                      moveSprite(target, newTargetPosX, newTargetPosY);
+                    }, 500);
+                  } else {
+                    changeTextureTemporarily(target, virus_dmgTex);
+                  }
+                }
 
-              changeTextureTemporarily(target, virus_deadText);
-              setTimeout(() => {
-                target.x = newTargetPosX;
-                target.y = newTargetPosY;
-                moveSprite(target, newTargetPosX, newTargetPosY);
-              }, 500);
+                setTimeout(() => {
+                  app.stage.removeChild(smallMarker);
+                }, 1000);
+              } else {
+                console.warn("⚠️ No coordinates from MATLAB yet.");
+              }
+            }
+          } catch (e) {
+            // 🔵 Message from MATLAB — string format like "X123Y456"
+            const match = raw.match(/X(\d+).*Y(\d+)/i);
+            if (match) {
+              latestCoords = [parseInt(match[1]), parseInt(match[2])];
+              console.log("📍 MATLAB coordinates updated:", latestCoords);
             } else {
-              changeTextureTemporarily(target, virus_dmgTex);
+              console.warn("🟠 Unknown message format:", raw);
             }
           }
-
-          // Remove the marker after a delay
-          setTimeout(() => {
-            app.stage.removeChild(smallMarker);
-          }, 1000);
         };
 
         //kör när meddelande inte tas emot
