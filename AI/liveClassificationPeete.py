@@ -9,7 +9,7 @@ import json
 
 # Connect to WebSocket server
 ws = websocket.WebSocket()
-ws.connect("ws://localhost:8080")
+ws.connect("ws://localhost:3001")
 
 # Load trained model
 model = joblib.load("AI/random_forest_model.pkl")
