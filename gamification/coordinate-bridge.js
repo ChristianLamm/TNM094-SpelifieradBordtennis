@@ -22,8 +22,11 @@ function parseCoordinates(coordString) {
     }
     
     // Convert to numbers
-    const xMm = parseInt(xMatch[1], 10);
-    const yMm = parseInt(yMatch[1], 10);
+    let xMm = parseInt(xMatch[1], 10);
+    let yMm = parseInt(yMatch[1], 10);
+
+    xMm += parseInt(10,10);
+    yMm += parseInt(10,10);
     
     return [xMm, yMm];
 }
