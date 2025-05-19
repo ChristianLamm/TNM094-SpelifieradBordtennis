@@ -20,7 +20,9 @@
     <script type="module">
       import { initializeApp } from "./game.js";
 
-      const ws = new WebSocket("ws://localhost:8080");
+      const ws = new WebSocket("ws://localhost:3001");
+      
+      let eventDataValue = 0;
 
       (async () => {
         const { app, updateHealthDisplay } = await initializeApp();
@@ -45,8 +47,8 @@
           textures["./images/martianWithFullHealth.png"]
         );
         alien.anchor.set(0.5);
-        alien.width = 120;
-        alien.height = 80;
+        alien.width = 240;
+        alien.height = 160;
         alien.position.set(app.screen.width / 2, 100);
         app.stage.addChild(alien);
 
@@ -97,56 +99,61 @@
 
         // WebSocket handler for hit coordinates
         ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
+          let eventDataValue = event.data;
+          console.log("Received coordinates:", eventDataValue);
 
-            // Only process if it's a coordinate message
-            if (data.type === "HIT_COORDS" && data.x && data.y) {
-              // Create hit marker
-              const marker = new PIXI.Sprite(
-                textures["./images/yellowMarker.png"]
-              );
-              marker.anchor.set(0.5);
-              marker.width = 30;
-              marker.height = 30;
-              marker.position.set(
-                data.x * app.screen.width,
-                data.y * app.screen.height
-              );
-              app.stage.addChild(marker);
+          let match = eventDataValue.match(/X(\d+).*Y(\d+)/i);
 
-              // Check if hit alien
-              const alienBounds = alien.getBounds();
-              if (
-                marker.x > alienBounds.x &&
-                marker.x < alienBounds.x + alienBounds.width &&
-                marker.y > alienBounds.y &&
-                marker.y < alienBounds.y + alienBounds.height
-              ) {
-                alienHealth--;
-                updateHealthDisplay(alienHealth);
-                //createLaser(); // Alien shoots back when hit
-
-                // Send hit confirmation to server if needed
-                ws.send(
-                  JSON.stringify({
-                    type: "ALIEN_HIT",
-                    health: alienHealth,
-                  })
-                );
-              }
-
-              // Remove marker after delay
-              setTimeout(() => {
-                if (marker.parent) {
-                  // Check if marker still exists
-                  app.stage.removeChild(marker);
-                }
-              }, 500);
-            }
-          } catch (e) {
-            console.error("Error parsing WebSocket data:", e);
+          let xCoord = 0;
+          let yCoord = 0;
+          if (match) {
+            xCoord = parseInt(match[1]);
+            yCoord = parseInt(match[2]);
+            console.log(
+              `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
+            );
+          } else{
+            console.error("failed to parse coords:", 
+              eventDataValue
+            );
           }
+
+          // Normalize to screen width/height
+         
+
+          // Create hit marker
+          const marker = new PIXI.Sprite(textures["./images/yellowMarker.png"]);
+          marker.anchor.set(0.5);
+          marker.width = 30;
+          marker.height = 30;
+          marker.position.set(x, y);
+          app.stage.addChild(marker);
+
+          // Check hit on alien
+          const alienBounds = alien.getBounds();
+          if (
+            marker.x > alienBounds.x &&
+            marker.x < alienBounds.x + alienBounds.width &&
+            marker.y > alienBounds.y &&
+            marker.y < alienBounds.y + alienBounds.height
+          ) {
+            alienHealth--;
+            updateHealthDisplay(alienHealth);
+
+            ws.send(
+              JSON.stringify({
+                type: "ALIEN_HIT",
+                health: alienHealth,
+              })
+            );
+          }
+
+          // Remove marker after a delay
+          setTimeout(() => {
+            if (marker.parent) {
+              app.stage.removeChild(marker);
+            }
+          }, 500);
         };
 
         // Game loop
