@@ -62,6 +62,12 @@ export function generateRandomCoordinates() {
     newYPos = tableHeight;
   }
 
+  //making sure that the y-pos is not to close to the net
+  const forbiddenZoneStart = tableHeight * (2 / 3);
+  if (newYPos > forbiddenZoneStart) {
+    newYPos = Math.random() * forbiddenZoneStart;
+  }
+
   return [newXPos, newYPos];
 }
 
