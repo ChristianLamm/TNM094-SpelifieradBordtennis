@@ -83,11 +83,8 @@
           let xCoord = 0;
           let yCoord = 0;
 
-          let xParsed = 0;
-          let yParsed = 0;
-
-          let originalMaxX = 1250;
-          let originalMaxY = 1370;
+          let originalMaxX = 1527;
+          let originalMaxY = 1375;
           if (match) {
             xCoord = parseInt(match[1]);
             yCoord = parseInt(match[2]);
@@ -95,9 +92,7 @@
             xCoord = (xCoord / originalMaxX) * tableWidth;
             yCoord = (yCoord / originalMaxY) * tableHeight;
 
-            // xParsed += parseInt((-50),10); // testar justera positonerna +10,+10
-            // yParsed += parseInt(10,10);
-            
+
             console.log(
               `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
             );
@@ -108,17 +103,14 @@
             );
           }
 
-    // const originalMaxX = 1250;
-    // const originalMaxY = 1370;
-
     
 
     
 
 
           // Place the marker at the hit location
-          smallMarker.x = (xCoord - 20) - smallMarker.width / 2;
-          smallMarker.y = (yCoord -20 )- smallMarker.height / 2;
+          smallMarker.x = xCoord - smallMarker.width / 2;
+          smallMarker.y = yCoord - smallMarker.height / 2;
           app.stage.addChild(smallMarker);
 
           // Check if the hit is on target
@@ -132,6 +124,9 @@
               let [newTargetPosX, newTargetPosY] = generateRandomCoordinates();
 
               changeTextureTemporarily(target, virus_deadText);
+              if(target.Texture != virusTex){
+                target.Texture = virusTex;
+              }
               setTimeout(() => {
                 target.x = newTargetPosX;
                 target.y = newTargetPosY;
@@ -139,6 +134,7 @@
               }, 500);
             } else {
               changeTextureTemporarily(target, virus_dmgTex);
+              
             }
           }
 
