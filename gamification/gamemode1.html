@@ -171,6 +171,9 @@ How does it work?
               let [newTargetPosX, newTargetPosY] = generateRandomCoordinates();
 
               changeTextureTemporarily(target, virus_deadText);
+              if(target.texture != virusTex){
+                target.texture = virusTex;
+              }
               setTimeout(() => {
                 target.x = newTargetPosX;
                 target.y = newTargetPosY;
@@ -178,6 +181,9 @@ How does it work?
               }, 500);
             } else {
               changeTextureTemporarily(target, virus_dmgTex);
+               if(target.texture != virusTex){
+                target.texture = virusTex;
+              }
             }
           }
 
