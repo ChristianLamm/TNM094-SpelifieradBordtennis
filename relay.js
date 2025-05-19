@@ -24,7 +24,37 @@ matlabSocket.on('open', () => {
   matlabSocket.send('Hello from Node.js');
 });
 
-// 4. Forward data from MATLAB to browser clients
+//connecting to python
+const net = require('net');
+
+const PORT = 3000;
+
+const server2 = net.createServer((socket) => {
+    console.log('Python client connected');
+
+    socket.on('data', (data) => {
+        console.log('Received from Python:', data.toString());
+        // You can process the data here
+    });
+
+    socket.on('end', () => {
+        console.log('Python client disconnected');
+    });
+
+    socket.on('error', (err) => {
+        console.error('Socket error:', err);
+    });
+});
+
+server2.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+    console.error('Server error:', err);
+});
+
+// 4. Forward data from MATLAB and python to browser clients
 matlabSocket.on('message', (data) => {
   console.log('Received from MATLAB:', data.toString());
 
@@ -35,24 +65,6 @@ matlabSocket.on('message', (data) => {
     }
   });
 });
-
-// Add to Node.js script:
-const pythonWSS = new WebSocket.Server({ port: 8080 });
-pythonWSS.on('connection', (socket) => {
-  console.log('Python connected');
-
-  socket.on('message', (msg) => {
-    console.log('From Python:', msg.toString());
-
-    // Forward to all browser clients
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(msg.toString());
-      }
-    });
-  });
-});
-
 
 //skickar till porten 3001
 server.listen(3001, () => {
