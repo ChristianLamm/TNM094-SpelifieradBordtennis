@@ -24,7 +24,11 @@
 
       let eventDataValue = 0;
 
-      import { hitCheck, changeTextureTemporarily } from "./functions.js";
+      import {
+        hitCheck,
+        changeTextureTemporarily,
+        hitCheckSprite,
+      } from "./functions.js";
       import { tableWidth, tableHeight } from "./common.js";
 
       (async () => {
@@ -105,6 +109,9 @@
         // Automatic shooting
         const shootInterval = setInterval(createLaser, 2000);
 
+        let alienX = 0;
+        let alienY = 0;
+
         // WebSocket handler for hit coordinates
         ws.onmessage = (event) => {
           let eventDataValue = event.data;
@@ -114,7 +121,10 @@
 
           let xCoord = 0;
           let yCoord = 0;
+
           if (match) {
+            alienX = alien.x;
+            alienY = alien.y;
             xCoord = parseInt(match[1]);
             yCoord = parseInt(match[2]);
             console.log(
@@ -143,17 +153,18 @@
 
           // Check hit on alien
           const alienBounds = alien.getBounds();
-          if (hitCheck(alien, marker.x, marker.y)) {
-            console.log("alien hit")
-            alienHealth--;
+          if (hitCheck(marker, alienX, alienY)) {
             updateHealthDisplay(alienHealth);
 
-            ws.send(
-              JSON.stringify({
-                type: "ALIEN_HIT",
-                health: alienHealth,
-              })
-            );
+            console.log("alien hit");
+            alienHealth--;
+
+            // ws.send(
+            //   JSON.stringify({
+            //     type: "ALIEN_HIT",
+            //     health: alienHealth,
+            //   })
+            // );
           }
 
           // Remove marker after a delay
@@ -200,6 +211,30 @@
                 clearInterval(shootInterval);
               }
               continue;
+            }
+
+            if (alienHealth < 1) {
+              // Show "Game Over" text
+              const gameOverText = new PIXI.Text({
+                text: "GAME OVER",
+                style: {
+                  fontFamily: "Arial",
+                  fontSize: 96,
+                  fill: 0xff0000,
+                  fontWeight: "bold",
+                  align: "center",
+                  stroke: 0x000000,
+                  strokeThickness: 8,
+                  dropShadow: true,
+                  dropShadowColor: "#000000",
+                  dropShadowBlur: 8,
+                  dropShadowDistance: 6,
+                },
+              });
+              gameOverText.anchor.set(0.5);
+              gameOverText.x = app.screen.width / 2;
+              gameOverText.y = app.screen.height / 2;
+              app.stage.addChild(gameOverText);
             }
 
             // Remove off-screen lasers

@@ -40,6 +40,29 @@ export function hitCheck(mySprite, myXCoord, myYCoord) {
   }
 }
 
+export function hitCheckSprite(mySprite1, mySprite2){
+  const rect1 = {
+    x: mySprite1.x,
+    y: mySprite1.y,
+    width: mySprite1.width,
+    height: mySprite1.height
+  };
+  const rect2 = {
+    x: mySprite2.x,
+    y: mySprite2.y,
+    width: mySprite2.width,
+    height: mySprite2.height
+  };
+
+  const isColliding =
+    rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y;
+
+  return isColliding;
+}
+
 //function to generate two random coordinates
 export function generateRandomCoordinates() {
   let newXPos = Math.random() * tableWidth;
