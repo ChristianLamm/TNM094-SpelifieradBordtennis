@@ -11,6 +11,7 @@ h1 {
   font-family: "Big Shoulders Inline", cursive;
   font-size: 5em;
   margin-bottom: 1.5em;
+
 }
 
 ul {
@@ -21,7 +22,7 @@ ul {
   width: 60%;
   margin: 0 auto;
   position: relative;
-  top: 50%;
+  top: 60%;
   transform: translateY(-50%);
 }
 

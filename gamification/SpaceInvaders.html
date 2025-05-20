@@ -55,7 +55,7 @@
         alien.width = 240 * 2;
         alien.height = 160 * 2;
         alien.position.set(app.screen.width / 2, 100);
-        alien.position.y = 220;
+        alien.position.y = 300;
         app.stage.addChild(alien);
 
         //monster som skjuter eld texture
@@ -153,19 +153,23 @@
 
           // Check hit on alien
           const alienBounds = alien.getBounds();
-          if (hitCheck(marker, alienX, alienY)) {
-            updateHealthDisplay(alienHealth);
-
+          let hit = false;
+          if (hitCheck(alien, marker.x, marker.y)) {
+            hit = true;
+          }
+          if (hit) {
             console.log("alien hit");
             alienHealth--;
-
-            // ws.send(
-            //   JSON.stringify({
-            //     type: "ALIEN_HIT",
-            //     health: alienHealth,
-            //   })
-            // );
+            updateHealthDisplay(alienHealth);
+            hit = false;
           }
+
+          // ws.send(
+          //   JSON.stringify({
+          //     type: "ALIEN_HIT",
+          //     health: alienHealth,
+          //   })
+          // );
 
           // Remove marker after a delay
           setTimeout(() => {
@@ -184,6 +188,30 @@
             if (alien.x > app.screen.width - 50 || alien.x < 50) {
               alienDirection *= -1;
             }
+          }
+
+          if (alienHealth < 1) {
+            // Show "Game Over" text
+            const gameOverText = new PIXI.Text({
+              text: "YOU WIN!",
+                style: {
+                fontFamily: "Arial",
+                fontSize: 96,
+                fill: 0xffff00,
+                fontWeight: "bold",
+                align: "center",
+                stroke: 0x000000,
+                strokeThickness: 8,
+                dropShadow: true,
+                dropShadowColor: "#000000",
+                dropShadowBlur: 8,
+                dropShadowDistance: 6,
+              },
+            });
+            gameOverText.anchor.set(0.5);
+            gameOverText.x = app.screen.width / 2;
+            gameOverText.y = app.screen.height / 2;
+            app.stage.addChild(gameOverText);
           }
 
           // Laser movement
@@ -206,35 +234,32 @@
               ws.send("TOWER_HIT");
 
               if (towerHealth <= 0) {
+                const gameOverText = new PIXI.Text({
+                  text: "GAME OVER",
+                  style: {
+                    fontFamily: "Arial",
+                    fontSize: 96,
+                    fill: 0xff0000,
+                    fontWeight: "bold",
+                    align: "center",
+                    stroke: 0x000000,
+                    strokeThickness: 8,
+                    dropShadow: true,
+                    dropShadowColor: "#000000",
+                    dropShadowBlur: 8,
+                    dropShadowDistance: 6,
+                  },
+                });
+                gameOverText.anchor.set(0.5);
+                gameOverText.x = app.screen.width / 2;
+                gameOverText.y = app.screen.height / 2;
+                app.stage.addChild(gameOverText);
+
                 tower.texture = PIXI.Texture.from("./images/virus_dead.png");
                 towerHealthText.text = "Tower Destroyed!";
                 clearInterval(shootInterval);
               }
               continue;
-            }
-
-            if (alienHealth < 1) {
-              // Show "Game Over" text
-              const gameOverText = new PIXI.Text({
-                text: "GAME OVER",
-                style: {
-                  fontFamily: "Arial",
-                  fontSize: 96,
-                  fill: 0xff0000,
-                  fontWeight: "bold",
-                  align: "center",
-                  stroke: 0x000000,
-                  strokeThickness: 8,
-                  dropShadow: true,
-                  dropShadowColor: "#000000",
-                  dropShadowBlur: 8,
-                  dropShadowDistance: 6,
-                },
-              });
-              gameOverText.anchor.set(0.5);
-              gameOverText.x = app.screen.width / 2;
-              gameOverText.y = app.screen.height / 2;
-              app.stage.addChild(gameOverText);
             }
 
             // Remove off-screen lasers
