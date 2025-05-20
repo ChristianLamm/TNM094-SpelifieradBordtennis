@@ -144,9 +144,17 @@
 
           let xCoord = 0;
           let yCoord = 0;
+
+          //the height and witdh of the table in mm
+          let originalMaxX = 1527;
+          let originalMaxY = 1375;
           if (match) {
             xCoord = parseInt(match[1]);
             yCoord = parseInt(match[2]);
+
+            //recalculating the coordinates to fit the table / projection
+            xCoord = (xCoord / originalMaxX) * tableWidth;
+            yCoord = (yCoord / originalMaxY) * tableHeight;
             console.log(
               `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
             );
