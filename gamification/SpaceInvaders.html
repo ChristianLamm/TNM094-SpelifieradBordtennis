@@ -24,13 +24,15 @@
       
       let eventDataValue = 0;
 
+      import hitCheck from "./functions.js";
+
       (async () => {
         const { app, updateHealthDisplay } = await initializeApp();
 
         // Load game assets
         await PIXI.Assets.init();
         const textures = await PIXI.Assets.load([
-          "./images/martianWithFullHealth.png",
+          "./images/monster.png",
           "./images/eld.png",
           "./images/shroomHouse2.png",
           "./images/lifebar4.png",
@@ -44,7 +46,7 @@
 
         // Game objects
         const alien = new PIXI.Sprite(
-          textures["./images/martianWithFullHealth.png"]
+          textures["./images/monster.png"]
         );
         alien.anchor.set(0.5);
         alien.width = 240;
@@ -54,11 +56,11 @@
 
         const tower = new PIXI.Sprite(textures["./images/shroomHouse2.png"]);
         tower.anchor.set(0.5);
-        tower.width = 80;
-        tower.height = 120;
+        tower.width = 80 * 2;
+        tower.height = 120 * 2;
         tower.position.set(app.screen.width / 2, app.screen.height - 80);
 
-        tower.scale.set(0.04); // Scale the tower to make it bigger
+        tower.scale.set(0.04); // Scale the tower to make it smaller
         app.stage.addChild(tower);
 
         // Game state
@@ -132,10 +134,7 @@
           // Check hit on alien
           const alienBounds = alien.getBounds();
           if (
-            marker.x > alienBounds.x &&
-            marker.x < alienBounds.x + alienBounds.width &&
-            marker.y > alienBounds.y &&
-            marker.y < alienBounds.y + alienBounds.height
+            hitCheck(marker, alien)
           ) {
             alienHealth--;
             updateHealthDisplay(alienHealth);
