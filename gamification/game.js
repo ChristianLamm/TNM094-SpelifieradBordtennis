@@ -48,11 +48,14 @@ export async function initializeApp() {
 
   // Health bar (will be updated dynamically)
   const healthBar = new PIXI.Sprite();
-  healthBar.y = 30; // Position below the label
-  healthBar.x = 70;
-  healthBar.width = 140;
-  healthBar.height = 160;
+  healthBar.y = 120; // Position below the label
+  healthBar.x = -50;
+  healthBar.width = 140*1.2;
+healthBar.height = 160*1.2;
   healthContainer.addChild(healthBar);
+
+
+  healthBar.angle = -90;
 
   function updateHealthDisplay(healthLevel) {
     healthBar.texture = PIXI.Texture.from(`./images/lifebar${healthLevel}.png`);

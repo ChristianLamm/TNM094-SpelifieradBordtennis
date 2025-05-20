@@ -21,10 +21,11 @@
       import { initializeApp } from "./game.js";
 
       const ws = new WebSocket("ws://localhost:3001");
-      
+
       let eventDataValue = 0;
 
-      import hitCheck from "./functions.js";
+      import { hitCheck, changeTextureTemporarily } from "./functions.js";
+      import { tableWidth, tableHeight } from "./common.js";
 
       (async () => {
         const { app, updateHealthDisplay } = await initializeApp();
@@ -39,20 +40,23 @@
           "./images/lifebar3.png",
           "./images/lifebar2.png",
           "./images/lifebar1.png",
-          "./images/lifebar1.png",
           "./images/yellowMarker.png",
           "./images/shroomHouse2.png",
+          "./images/monsterSkjuterEld.png",
         ]);
 
         // Game objects
-        const alien = new PIXI.Sprite(
-          textures["./images/monster.png"]
-        );
+        const alien = new PIXI.Sprite(textures["./images/monster.png"]);
         alien.anchor.set(0.5);
-        alien.width = 240;
-        alien.height = 160;
+        alien.width = 240 * 2;
+        alien.height = 160 * 2;
         alien.position.set(app.screen.width / 2, 100);
+        alien.position.y = 220;
         app.stage.addChild(alien);
+
+        //monster som skjuter eld texture
+        const monsterSkjuterEldTexture =
+          textures["./images/monsterSkjuterEld.png"];
 
         const tower = new PIXI.Sprite(textures["./images/shroomHouse2.png"]);
         tower.anchor.set(0.5);
@@ -87,10 +91,12 @@
         const createLaser = () => {
           if (alienHealth <= 0) return;
 
+          changeTextureTemporarily(alien, monsterSkjuterEldTexture);
+
           const laser = new PIXI.Sprite(textures["./images/eld.png"]);
           laser.anchor.set(0.5);
-          laser.width = 120;
-          laser.height = 60;
+          laser.width = 120 * 2;
+          laser.height = 60 * 2;
           laser.position.set(alien.x, alien.y + 40);
           app.stage.addChild(laser);
           activeLasers.push(laser);
@@ -114,28 +120,31 @@
             console.log(
               `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
             );
-          } else{
-            console.error("failed to parse coords:", 
-              eventDataValue
-            );
+          } else {
+            console.error("failed to parse coords:", eventDataValue);
           }
 
           // Normalize to screen width/height
-         
+          let originalMaxX = 1527;
+          let originalMaxY = 1375;
+
+          xCoord = (xCoord / originalMaxX) * tableWidth;
+          yCoord = (yCoord / originalMaxY) * tableHeight;
 
           // Create hit marker
           const marker = new PIXI.Sprite(textures["./images/yellowMarker.png"]);
           marker.anchor.set(0.5);
           marker.width = 30;
           marker.height = 30;
-          marker.position.set(x, y);
+          xCoord = xCoord - marker.width / 2;
+          yCoord = yCoord - marker.height / 2;
+          marker.position.set(xCoord, yCoord);
           app.stage.addChild(marker);
 
           // Check hit on alien
           const alienBounds = alien.getBounds();
-          if (
-            hitCheck(marker, alien)
-          ) {
+          if (hitCheck(alien, marker.x, marker.y)) {
+            console.log("alien hit")
             alienHealth--;
             updateHealthDisplay(alienHealth);
 
