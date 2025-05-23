@@ -6,8 +6,16 @@
   </head>
   <body>
     <script type="module">
-      //setting up the websocket - this will receive coordinates in format "xCoord,yCoord"
-      const ws = new WebSocket("ws://localhost:3001");
+        // Import tableWidth and tableHeight from common.js
+        import { tableWidth, tableHeight } from './gamification/common.js';
+        
+        // Define table dimensions (modify these to match your actual table dimensions)
+        const TABLE_WIDTH_MM = 2740; // Standard table tennis table width in mm
+        const TABLE_HEIGHT_MM = 1525; // Standard table tennis table height in mm
+        
+        // Get game dimensions from common.js
+        document.getElementById('dimensions').textContent = `Game dimensions: ${tableWidth}x${tableHeight}`;
+        console.log(`Game dimensions from common.js: ${tableWidth}x${tableHeight}`);
 
       // importing the stage
       import {
@@ -75,19 +83,71 @@
           let eventDataValue = event.data; // Get the data from WebSocket
           console.log("Received raw data:", eventDataValue);
           
-          // Parse coordinates from comma-separated string
-          const parts = eventDataValue.split(',');
+          // Debug the data type and format
+          console.log("Data type:", typeof eventDataValue);
+          console.log("Data content:", eventDataValue);
+          
+          // First try the X/Y format (from MATLAB)
           let xCoord, yCoord;
           
-          if (parts.length >= 2) {
-            xCoord = parseFloat(parts[0]);
-            yCoord = parseFloat(parts[1]);
-          } else {
-            console.error("Invalid coordinate format:", eventDataValue);
-            return;
+          // Check if the data might be in X123Y456 format
+          if (typeof eventDataValue === 'string' && eventDataValue.includes('X') && eventDataValue.includes('Y')) {
+            const xMatch = eventDataValue.match(/X(\d+)/);
+            const yMatch = eventDataValue.match(/Y(\d+)/);
+            
+            if (xMatch && yMatch) {
+              xCoord = parseInt(xMatch[1], 10);
+              yCoord = parseInt(yMatch[1], 10);
+              
+              // Convert to game coordinates if needed (assuming table dimensions have been set)
+              // This assumes the coordinate bridge is not being used
+              if (typeof TABLE_WIDTH_MM !== 'undefined' && typeof TABLE_HEIGHT_MM !== 'undefined') {
+                xCoord = Math.round((xCoord / TABLE_WIDTH_MM) * tableWidth);
+                yCoord = Math.round((yCoord / TABLE_HEIGHT_MM) * tableHeight);
+              }
+            }
+            
+            // Convert to numbers
+            const xMm = parseInt(xMatch[1], 10);
+            const yMm = parseInt(yMatch[1], 10);
+            
+            return [xMm, yMm];
+        }
+
+        // Function to convert millimeter coordinates to game coordinates
+        function convertToGameCoordinates(xMm, yMm) {
+            // Convert mm coordinates to proportional game coordinates
+            const xGame = Math.round((xMm / TABLE_WIDTH_MM) * tableWidth);
+            const yGame = Math.round((yMm / TABLE_HEIGHT_MM) * tableHeight);
+            
+            return [xGame, yGame];
+        }
+
+        // Connect to the input WebSocket server (from MATLAB)
+        const inputSocket = new WebSocket('ws://localhost:3001');
+        
+        // Connect to your game's WebSocket server
+        const gameSocket = new WebSocket('ws://localhost:5050');
+        
+        // Status elements
+        const statusDiv = document.getElementById('status');
+        const coordDiv = document.getElementById('coordinates');
+
+        // Handle incoming messages from MATLAB
+        inputSocket.onmessage = function(event) {
+            const coordString = event.data;
+            console.log('Received from MATLAB:', coordString);
+            coordDiv.textContent = `Raw input: ${coordString}`;
+            
+            // Parse the coordinates
+            const mmCoords = parseCoordinates(coordString);
+            if (!mmCoords) {
+                coordDiv.textContent += ' (Invalid format)';
+                return;
+            }
           }
           
-          // Validate coordinates
+          // If we still don't have valid coordinates, log an error
           if (isNaN(xCoord) || isNaN(yCoord)) {
             console.error("Failed to parse coordinates from:", eventDataValue);
             return;

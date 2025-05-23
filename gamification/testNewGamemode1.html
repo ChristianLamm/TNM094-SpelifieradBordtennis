@@ -29,8 +29,10 @@
 
       (async () => {
         const { app, scoreText, updateScoreText } = await initializeApp();
-        
-        console.log(`Game initialized with dimensions: ${tableWidth}x${tableHeight}`);
+
+        console.log(
+          `Game initialized with dimensions: ${tableWidth}x${tableHeight}`
+        );
 
         //-------------------------GAMECODE GOES HERE--------------------------
         //load images and set them as variables
@@ -45,12 +47,12 @@
         // Create the target and add it to the stage
         let target = new PIXI.Sprite(virusTex);
         target.scale.set(0.5, 0.5); // Scale the target to half its size
-        
+
         // Start with the target in a random position
         let [startX, startY] = generateRandomCoordinates();
         target.x = startX;
         target.y = startY;
-        
+
         app.stage.addChild(target);
 
         // Create the marker
@@ -60,7 +62,7 @@
         // Create a smaller marker
         await PIXI.Assets.load("images/yellowMarker.png");
         let smallMarker = PIXI.Sprite.from("images/yellowMarker.png");
-        smallMarker.scale.set(0.5, 0.5); // Scale the marker to half its size
+        smallMarker.scale.set(2, 2); // Scale the marker to half its size
 
         //-------------------------------------------------------------------------------------------------
         // GAMIFICATION
@@ -72,34 +74,45 @@
 
         //körs när meddelande tas emot från ws server
         ws.onmessage = function (event) {
-          let eventDataValue = event.data; // Get the data from WebSocket
-          console.log("Received raw data:", eventDataValue);
-          
-          // Parse coordinates from comma-separated string
-          const parts = eventDataValue.split(',');
-          let xCoord, yCoord;
-          
-          if (parts.length >= 2) {
-            xCoord = parseFloat(parts[0]);
-            yCoord = parseFloat(parts[1]);
+          let eventDataValue = event.data; // This will be in format "xCoord,yCoord"
+          console.log("Received coordinates:", eventDataValue);
+
+          // Make the parsing case-insensitive and consistent
+          let match = eventDataValue.match(/X(\d+).*Y(\d+)/i);
+
+          let xCoord = 0;
+          let yCoord = 0;
+
+          let originalMaxX = 1527;
+          let originalMaxY = 1375;
+          if (match) {
+            xCoord = parseInt(match[1]);
+            yCoord = parseInt(match[2]);
+
+            xCoord = (xCoord / originalMaxX) * tableWidth;
+            yCoord = (yCoord / originalMaxY) * tableHeight;
+
+
+            console.log(
+              `Parsed game coordinates: (x = ${xCoord}, y = ${yCoord})`
+            );
           } else {
-            console.error("Invalid coordinate format:", eventDataValue);
-            return;
+            console.error(
+              "Failed to parse coordinates from string:",
+              eventDataValue
+            );
           }
-          
-          // Validate coordinates
-          if (isNaN(xCoord) || isNaN(yCoord)) {
-            console.error("Failed to parse coordinates from:", eventDataValue);
-            return;
-          }
-          
-          console.log(`Parsed game coordinates: (${xCoord}, ${yCoord})`);
-          
+
+    
+
+    
+
+
           // Place the marker at the hit location
           smallMarker.x = xCoord - smallMarker.width / 2;
           smallMarker.y = yCoord - smallMarker.height / 2;
           app.stage.addChild(smallMarker);
-          
+
           // Check if the hit is on target
           if (hitCheck(target, xCoord, yCoord)) {
             console.log("Hit on target!");
@@ -111,6 +124,9 @@
               let [newTargetPosX, newTargetPosY] = generateRandomCoordinates();
 
               changeTextureTemporarily(target, virus_deadText);
+              if(target.Texture != virusTex){
+                target.Texture = virusTex;
+              }
               setTimeout(() => {
                 target.x = newTargetPosX;
                 target.y = newTargetPosY;
@@ -118,6 +134,7 @@
               }, 500);
             } else {
               changeTextureTemporarily(target, virus_dmgTex);
+              
             }
           }
 
