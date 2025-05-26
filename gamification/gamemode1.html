@@ -190,6 +190,9 @@
               changeTextureTemporarily(target, virus_dmgTex);
             }
           }
+          else{
+            changeTexture(target, virusTex);
+          }
 
           // Remove the marker after a delay
           setTimeout(() => {
@@ -241,6 +244,7 @@
             console.log("You hit the target!");
           } else {
             // Missed shot
+            changeTexture(target, virusTex);
             marker.x = x - marker.width / 2;
             marker.y = y - marker.height / 2;
 
