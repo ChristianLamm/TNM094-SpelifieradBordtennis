@@ -74,6 +74,9 @@
 
         //körs när meddelande tas emot från ws server
         ws.onmessage = function (event) {
+
+          console.log("Current time:", new Date().toISOString(), "Milliseconds:", new Date().getMilliseconds());
+
           let eventDataValue = event.data; // This will be in format "xCoord,yCoord"
           console.log("Received coordinates:", eventDataValue);
 
